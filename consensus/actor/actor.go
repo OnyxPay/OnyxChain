@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package actor
@@ -24,7 +24,7 @@ import (
 
 	"github.com/OnyxPay/OnyxChain-eventbus/actor"
 	"github.com/OnyxPay/OnyxChain/core/types"
-	onyxErrors "github.com/OnyxPay/OnyxChain/errors"
+	onxErrors "github.com/OnyxPay/OnyxChain/errors"
 	netActor "github.com/OnyxPay/OnyxChain/p2pserver/actor/server"
 	ptypes "github.com/OnyxPay/OnyxChain/p2pserver/message/types"
 	txpool "github.com/OnyxPay/OnyxChain/txnpool/common"
@@ -56,7 +56,7 @@ func (self *TxPoolActor) VerifyBlock(txs []*types.Transaction, height uint32) er
 
 	txentry := entry.(*txpool.VerifyBlockRsp).TxnPool
 	for _, entry := range txentry {
-		if entry.ErrCode != onyxErrors.ErrNoError {
+		if entry.ErrCode != onxErrors.ErrNoError {
 			return errors.New(entry.ErrCode.Error())
 		}
 	}

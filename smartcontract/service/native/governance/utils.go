@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package governance
@@ -31,7 +31,7 @@ import (
 	cstates "github.com/OnyxPay/OnyxChain/core/states"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/auth"
-	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onyx"
+	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
 	"github.com/OnyxPay/OnyxChain/vm/neovm/types"
 )
@@ -113,10 +113,10 @@ func GetView(native *native.NativeService, contract common.Address) (uint32, err
 	return governanceView.View, nil
 }
 
-func appCallTransferOnyx(native *native.NativeService, from common.Address, to common.Address, amount uint64) error {
-	err := appCallTransfer(native, utils.OnyxContractAddress, from, to, amount)
+func appCallTransferOnx(native *native.NativeService, from common.Address, to common.Address, amount uint64) error {
+	err := appCallTransfer(native, utils.OnxContractAddress, from, to, amount)
 	if err != nil {
-		return fmt.Errorf("appCallTransferOnyx, appCallTransfer error: %v", err)
+		return fmt.Errorf("appCallTransferOnx, appCallTransfer error: %v", err)
 	}
 	return nil
 }
@@ -130,13 +130,13 @@ func appCallTransferOxg(native *native.NativeService, from common.Address, to co
 }
 
 func appCallTransfer(native *native.NativeService, contract common.Address, from common.Address, to common.Address, amount uint64) error {
-	var sts []onyx.State
-	sts = append(sts, onyx.State{
+	var sts []onx.State
+	sts = append(sts, onx.State{
 		From:  from,
 		To:    to,
 		Value: amount,
 	})
-	transfers := onyx.Transfers{
+	transfers := onx.Transfers{
 		States: sts,
 	}
 	sink := common.NewZeroCopySink(nil)
@@ -148,10 +148,10 @@ func appCallTransfer(native *native.NativeService, contract common.Address, from
 	return nil
 }
 
-func appCallTransferFromOnyx(native *native.NativeService, sender common.Address, from common.Address, to common.Address, amount uint64) error {
-	err := appCallTransferFrom(native, utils.OnyxContractAddress, sender, from, to, amount)
+func appCallTransferFromOnx(native *native.NativeService, sender common.Address, from common.Address, to common.Address, amount uint64) error {
+	err := appCallTransferFrom(native, utils.OnxContractAddress, sender, from, to, amount)
 	if err != nil {
-		return fmt.Errorf("appCallTransferFromOnyx, appCallTransferFrom error: %v", err)
+		return fmt.Errorf("appCallTransferFromOnx, appCallTransferFrom error: %v", err)
 	}
 	return nil
 }
@@ -165,7 +165,7 @@ func appCallTransferFromOxg(native *native.NativeService, sender common.Address,
 }
 
 func appCallTransferFrom(native *native.NativeService, contract common.Address, sender common.Address, from common.Address, to common.Address, amount uint64) error {
-	params := &onyx.TransferFrom{
+	params := &onx.TransferFrom{
 		Sender: sender,
 		From:   from,
 		To:     to,
@@ -671,10 +671,10 @@ func putSplitCurve(native *native.NativeService, contract common.Address, splitC
 	return nil
 }
 
-func appCallInitContractAdmin(native *native.NativeService, adminOnyxID []byte) error {
+func appCallInitContractAdmin(native *native.NativeService, adminOnxID []byte) error {
 	bf := new(bytes.Buffer)
 	params := &auth.InitContractAdminParam{
-		AdminOnyxID: adminOnyxID,
+		AdminOnxID: adminOnxID,
 	}
 	err := params.Serialize(bf)
 	if err != nil {

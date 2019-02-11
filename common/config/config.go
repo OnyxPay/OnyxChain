@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package config
@@ -78,7 +78,7 @@ const (
 	NETWORK_ID_MAIN_NET      = 1
 	NETWORK_ID_POLARIS_NET   = 2
 	NETWORK_ID_SOLO_NET      = 3
-	NETWORK_NAME_MAIN_NET    = "OnyxChain"
+	NETWORK_NAME_MAIN_NET    = "onyxchain"
 	NETWORK_NAME_POLARIS_NET = "polaris"
 	NETWORK_NAME_SOLO_NET    = "testmode"
 )
@@ -113,10 +113,10 @@ func GetNetworkName(id uint32) string {
 
 var PolarisConfig = &GenesisConfig{
 	SeedList: []string{
-		"polaris1.onyx.io:20338",
-		"polaris2.onyx.io:20338",
-		"polaris3.onyx.io:20338",
-		"polaris4.onyx.io:20338"},
+		"polaris1.onx.io:20338",
+		"polaris2.onx.io:20338",
+		"polaris3.onx.io:20338",
+		"polaris4.onx.io:20338"},
 	ConsensusType: CONSENSUS_TYPE_VBFT,
 	VBFT: &VBFTConfig{
 		N:                    7,
@@ -127,7 +127,7 @@ var PolarisConfig = &GenesisConfig{
 		HashMsgDelay:         10000,
 		PeerHandshakeTimeout: 10,
 		MaxBlockChangeView:   3000,
-		AdminOnyxID:           "did:onyx:AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",
+		AdminOnxID:           "did:onx:AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",
 		MinInitStake:         10000,
 		VrfValue:             "1c9810aa9822e511d5804a9c4db9dd08497c31087b0daafa34d768a3253441fa20515e2f30f81741102af0ca3cefc4818fef16adb825fbaa8cad78647f3afb590e",
 		VrfProof:             "c57741f934042cb8d8b087b44b161db56fc3ffd4ffb675d36cd09f83935be853d8729f3f5298d12d6fd28d45dde515a4b9d7f67682d182ba5118abf451ff1988",
@@ -182,11 +182,11 @@ var PolarisConfig = &GenesisConfig{
 
 var MainNetConfig = &GenesisConfig{
 	SeedList: []string{
-		"seed1.onyx.io:20338",
-		"seed2.onyx.io:20338",
-		"seed3.onyx.io:20338",
-		"seed4.onyx.io:20338",
-		"seed5.onyx.io:20338"},
+		"seed1.onx.io:20338",
+		"seed2.onx.io:20338",
+		"seed3.onx.io:20338",
+		"seed4.onx.io:20338",
+		"seed5.onx.io:20338"},
 	ConsensusType: CONSENSUS_TYPE_VBFT,
 	VBFT: &VBFTConfig{
 		N:                    7,
@@ -197,7 +197,7 @@ var MainNetConfig = &GenesisConfig{
 		HashMsgDelay:         10000,
 		PeerHandshakeTimeout: 10,
 		MaxBlockChangeView:   120000,
-		AdminOnyxID:           "did:onyx:AdjfcJgwru2FD8kotCPvLDXYzRjqFjc9Tb",
+		AdminOnxID:           "did:onx:AdjfcJgwru2FD8kotCPvLDXYzRjqFjc9Tb",
 		MinInitStake:         100000,
 		VrfValue:             "1c9810aa9822e511d5804a9c4db9dd08497c31087b0daafa34d768a3253441fa20515e2f30f81741102af0ca3cefc4818fef16adb825fbaa8cad78647f3afb590e",
 		VrfProof:             "c57741f934042cb8d8b087b44b161db56fc3ffd4ffb675d36cd09f83935be853d8729f3f5298d12d6fd28d45dde515a4b9d7f67682d182ba5118abf451ff1988",
@@ -276,7 +276,7 @@ type VBFTConfig struct {
 	PeerHandshakeTimeout uint32               `json:"peer_handshake_timeout"`
 	MaxBlockChangeView   uint32               `json:"max_block_change_view"`
 	MinInitStake         uint32               `json:"min_init_stake"`
-	AdminOnyxID           string               `json:"admin_onyx_id"`
+	AdminOnxID           string               `json:"admin_onx_id"`
 	VrfValue             string               `json:"vrf_value"`
 	VrfProof             string               `json:"vrf_proof"`
 	Peers                []*VBFTPeerStakeInfo `json:"peers"`
@@ -310,8 +310,8 @@ func (this *VBFTConfig) Serialize(w io.Writer) error {
 	if err := serialization.WriteUint32(w, this.MinInitStake); err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.WriteUint32, serialize min_init_stake error!")
 	}
-	if err := serialization.WriteString(w, this.AdminOnyxID); err != nil {
-		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.WriteString, serialize admin_onyx_id error!")
+	if err := serialization.WriteString(w, this.AdminOnxID); err != nil {
+		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.WriteString, serialize admin_onx_id error!")
 	}
 	if err := serialization.WriteString(w, this.VrfValue); err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.WriteString, serialize vrf_value error!")
@@ -367,9 +367,9 @@ func (this *VBFTConfig) Deserialize(r io.Reader) error {
 	if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.ReadUint32, deserialize minInitStake error!")
 	}
-	adminOnyxID, err := serialization.ReadString(r)
+	adminOnxID, err := serialization.ReadString(r)
 	if err != nil {
-		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.ReadString, deserialize adminOnyxID error!")
+		return errors.NewDetailErr(err, errors.ErrNoCode, "serialization.ReadString, deserialize adminOnxID error!")
 	}
 	vrfValue, err := serialization.ReadString(r)
 	if err != nil {
@@ -401,7 +401,7 @@ func (this *VBFTConfig) Deserialize(r io.Reader) error {
 	this.PeerHandshakeTimeout = peerHandshakeTimeout
 	this.MaxBlockChangeView = maxBlockChangeView
 	this.MinInitStake = minInitStake
-	this.AdminOnyxID = adminOnyxID
+	this.AdminOnxID = adminOnxID
 	this.VrfValue = vrfValue
 	this.VrfProof = vrfProof
 	this.Peers = peers

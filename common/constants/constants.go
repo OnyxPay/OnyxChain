@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package constants
@@ -28,23 +28,23 @@ var (
 	GENESIS_BLOCK_TIMESTAMP = uint32(time.Date(2018, time.June, 30, 0, 0, 0, 0, time.UTC).Unix())
 )
 
-// onyx constants
+// onx constants
 const (
-	ONYX_NAME         = "ONYX Token"
-	ONYX_SYMBOL       = "ONYX"
-	ONYX_DECIMALS     = 1
-	ONYX_TOTAL_SUPPLY = uint64(1000000000)
+	ONX_NAME         = "ONX Token"
+	ONX_SYMBOL       = "ONX"
+	ONX_DECIMALS     = 1
+	ONX_TOTAL_SUPPLY = uint64(1000000000)
 )
 
 // oxg constants
 const (
-	OXG_NAME         = "oxg Token"
-	OXG_SYMBOL       = "oxg"
+	OXG_NAME         = "OXG Token"
+	OXG_SYMBOL       = "OXG"
 	OXG_DECIMALS     = 9
 	OXG_TOTAL_SUPPLY = uint64(1000000000000000000)
 )
 
-// onyx/oxg unbound model constants
+// onx/oxg unbound model constants
 const UNBOUND_TIME_INTERVAL = uint32(31536000)
 
 var UNBOUND_GENERATION_AMOUNT = [18]uint64{5, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
@@ -60,11 +60,11 @@ var UNBOUND_DEADLINE = (func() uint32 {
 	numInterval := len(UNBOUND_GENERATION_AMOUNT)
 
 	if UNBOUND_GENERATION_AMOUNT[numInterval-1] != 1 ||
-		!(count-uint64(UNBOUND_TIME_INTERVAL) < ONYX_TOTAL_SUPPLY && ONYX_TOTAL_SUPPLY <= count) {
+		!(count-uint64(UNBOUND_TIME_INTERVAL) < ONX_TOTAL_SUPPLY && ONX_TOTAL_SUPPLY <= count) {
 		panic("incompatible constants setting")
 	}
 
-	return UNBOUND_TIME_INTERVAL*uint32(numInterval) - uint32(count-uint64(ONYX_TOTAL_SUPPLY))
+	return UNBOUND_TIME_INTERVAL*uint32(numInterval) - uint32(count-uint64(ONX_TOTAL_SUPPLY))
 })()
 
 // multi-sig constants

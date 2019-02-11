@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package rest
@@ -25,7 +25,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/common/log"
 	scom "github.com/OnyxPay/OnyxChain/core/store/common"
 	"github.com/OnyxPay/OnyxChain/core/types"
-	onyxErrors "github.com/OnyxPay/OnyxChain/errors"
+	onxErrors "github.com/OnyxPay/OnyxChain/errors"
 	bactor "github.com/OnyxPay/OnyxChain/http/base/actor"
 	bcomn "github.com/OnyxPay/OnyxChain/http/base/common"
 	berr "github.com/OnyxPay/OnyxChain/http/base/error"
@@ -279,7 +279,7 @@ func SendRawTransaction(cmd map[string]interface{}) map[string]interface{} {
 		}
 	}
 	log.Debugf("SendRawTransaction send to txpool %s", hash.ToHexString())
-	if errCode, desc := bcomn.SendTxToPool(txn); errCode != onyxErrors.ErrNoError {
+	if errCode, desc := bcomn.SendTxToPool(txn); errCode != onxErrors.ErrNoError {
 		resp["Error"] = int64(errCode)
 		resp["Result"] = desc
 		log.Warnf("SendRawTransaction verified %s error: %s", hash.ToHexString(), desc)
@@ -521,7 +521,7 @@ func GetUnboundOxg(cmd map[string]interface{}) map[string]interface{} {
 	if err != nil {
 		return ResponsePack(berr.INVALID_PARAMS)
 	}
-	fromAddr := utils.OnyxContractAddress
+	fromAddr := utils.OnxContractAddress
 	rsp, err := bcomn.GetAllowance("oxg", fromAddr, toAddr)
 	if err != nil {
 		return ResponsePack(berr.INVALID_PARAMS)

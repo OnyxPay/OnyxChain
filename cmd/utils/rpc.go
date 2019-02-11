@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -43,16 +43,16 @@ type OnyxChainError struct {
 }
 
 func NewOnyxChainError(err error, errCode ...int64) *OnyxChainError {
-	onyxErr := &OnyxChainError{Error: err}
+	onxErr := &OnyxChainError{Error: err}
 	if len(errCode) > 0 {
-		onyxErr.ErrorCode = errCode[0]
+		onxErr.ErrorCode = errCode[0]
 	} else {
-		onyxErr.ErrorCode = ERROR_ONYXCHAIN_COMMON
+		onxErr.ErrorCode = ERROR_ONYXCHAIN_COMMON
 	}
 	if err == nil {
-		onyxErr.ErrorCode = ERROR_ONYXCHAIN_SUCCESS
+		onxErr.ErrorCode = ERROR_ONYXCHAIN_SUCCESS
 	}
-	return onyxErr
+	return onxErr
 }
 
 //JsonRpcRequest object in rpc

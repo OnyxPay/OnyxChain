@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Package common privides functions for http handler call
@@ -31,10 +31,10 @@ import (
 	"github.com/OnyxPay/OnyxChain/core/ledger"
 	"github.com/OnyxPay/OnyxChain/core/payload"
 	"github.com/OnyxPay/OnyxChain/core/types"
-	onyxErrors "github.com/OnyxPay/OnyxChain/errors"
+	onxErrors "github.com/OnyxPay/OnyxChain/errors"
 	bactor "github.com/OnyxPay/OnyxChain/http/base/actor"
 	"github.com/OnyxPay/OnyxChain/smartcontract/event"
-	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onyx"
+	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
 	svrneovm "github.com/OnyxPay/OnyxChain/smartcontract/service/neovm"
 	"github.com/OnyxPay/OnyxChain/vm/neovm"
@@ -47,7 +47,7 @@ import (
 const MAX_SEARCH_HEIGHT uint32 = 100
 
 type BalanceOfRsp struct {
-	Onyx string `json:"onyx"`
+	Onx string `json:"onx"`
 	Oxg string `json:"oxg"`
 }
 
@@ -210,12 +210,12 @@ func TransArryByteToHexString(ptx *types.Transaction) *Transactions {
 	return trans
 }
 
-func SendTxToPool(txn *types.Transaction) (onyxErrors.ErrCode, string) {
-	if errCode, desc := bactor.AppendTxToPool(txn); errCode != onyxErrors.ErrNoError {
+func SendTxToPool(txn *types.Transaction) (onxErrors.ErrCode, string) {
+	if errCode, desc := bactor.AppendTxToPool(txn); errCode != onxErrors.ErrNoError {
 		log.Warn("TxnPool verify error:", errCode.Error())
 		return errCode, desc
 	}
-	return onyxErrors.ErrNoError, ""
+	return onxErrors.ErrNoError, ""
 }
 
 func GetBlockInfo(block *types.Block) BlockInfo {
@@ -262,23 +262,23 @@ func GetBlockInfo(block *types.Block) BlockInfo {
 }
 
 func GetBalance(address common.Address) (*BalanceOfRsp, error) {
-	onyx, err := GetContractBalance(0, utils.OnyxContractAddress, address)
+	onx, err := GetContractBalance(0, utils.OnxContractAddress, address)
 	if err != nil {
-		return nil, fmt.Errorf("get onyx balance error:%s", err)
+		return nil, fmt.Errorf("get onx balance error:%s", err)
 	}
 	oxg, err := GetContractBalance(0, utils.OxgContractAddress, address)
 	if err != nil {
-		return nil, fmt.Errorf("get onyx balance error:%s", err)
+		return nil, fmt.Errorf("get onx balance error:%s", err)
 	}
 	return &BalanceOfRsp{
-		Onyx: fmt.Sprintf("%d", onyx),
+		Onx: fmt.Sprintf("%d", onx),
 		Oxg: fmt.Sprintf("%d", oxg),
 	}, nil
 }
 
 func GetGrantOxg(addr common.Address) (string, error) {
-	key := append([]byte(onyx.UNBOUND_TIME_OFFSET), addr[:]...)
-	value, err := ledger.DefLedger.GetStorageItem(utils.OnyxContractAddress, key)
+	key := append([]byte(onx.UNBOUND_TIME_OFFSET), addr[:]...)
+	value, err := ledger.DefLedger.GetStorageItem(utils.OnxContractAddress, key)
 	if err != nil {
 		value = []byte{0, 0, 0, 0}
 	}
@@ -286,19 +286,19 @@ func GetGrantOxg(addr common.Address) (string, error) {
 	if err != nil {
 		return fmt.Sprintf("%v", 0), err
 	}
-	onyx, err := GetContractBalance(0, utils.OnyxContractAddress, addr)
+	onx, err := GetContractBalance(0, utils.OnxContractAddress, addr)
 	if err != nil {
 		return fmt.Sprintf("%v", 0), err
 	}
-	boundong := utils.CalcUnbindOxg(onyx, v, uint32(time.Now().Unix())-constants.GENESIS_BLOCK_TIMESTAMP)
-	return fmt.Sprintf("%v", boundong), nil
+	boundoxg := utils.CalcUnbindOxg(onx, v, uint32(time.Now().Unix())-constants.GENESIS_BLOCK_TIMESTAMP)
+	return fmt.Sprintf("%v", boundoxg), nil
 }
 
 func GetAllowance(asset string, from, to common.Address) (string, error) {
 	var contractAddr common.Address
 	switch strings.ToLower(asset) {
-	case "onyx":
-		contractAddr = utils.OnyxContractAddress
+	case "onx":
+		contractAddr = utils.OnxContractAddress
 	case "oxg":
 		contractAddr = utils.OxgContractAddress
 	default:

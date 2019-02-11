@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package cmd
@@ -179,18 +179,18 @@ func accountCreate(ctx *cli.Context) error {
 	}
 	defer common.ClearPasswd(pass)
 	if ctx.Bool(utils.IdentityFlag.Name) {
-		// create ONYX ID
+		// create ONX ID
 		wd := wallet.GetWalletData()
 		id, err := account.NewIdentity(optionLabel, keyType, curve, pass)
 		if err != nil {
-			return fmt.Errorf("create ONYX ID error: %s", err)
+			return fmt.Errorf("create ONX ID error: %s", err)
 		}
 		wd.AddIdentity(id)
 		err = wd.Save(optionFile)
 		if err != nil {
 			return fmt.Errorf("save to %s error: %s", optionFile, err)
 		}
-		PrintInfoMsg("ONYX ID created:%s", id.ID)
+		PrintInfoMsg("ONX ID created:%s", id.ID)
 		PrintInfoMsg("Bind public key:%s", id.Control[0].Public)
 		return nil
 	}

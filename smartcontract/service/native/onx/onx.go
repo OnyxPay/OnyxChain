@@ -1,22 +1,22 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package onyx
+package onx
 
 import (
 	"bytes"
@@ -37,24 +37,24 @@ const (
 	APPROVE_FLAG  byte = 2
 )
 
-func InitOnyx() {
-	native.Contracts[utils.OnyxContractAddress] = RegisterOnyxContract
+func InitOnx() {
+	native.Contracts[utils.OnxContractAddress] = RegisterOnxContract
 }
 
-func RegisterOnyxContract(native *native.NativeService) {
-	native.Register(INIT_NAME, OnyxInit)
-	native.Register(TRANSFER_NAME, OnyxTransfer)
-	native.Register(APPROVE_NAME, OnyxApprove)
-	native.Register(TRANSFERFROM_NAME, OnyxTransferFrom)
-	native.Register(NAME_NAME, OnyxName)
-	native.Register(SYMBOL_NAME, OnyxSymbol)
-	native.Register(DECIMALS_NAME, OnyxDecimals)
-	native.Register(TOTALSUPPLY_NAME, OnyxTotalSupply)
-	native.Register(BALANCEOF_NAME, OnyxBalanceOf)
-	native.Register(ALLOWANCE_NAME, OnyxAllowance)
+func RegisterOnxContract(native *native.NativeService) {
+	native.Register(INIT_NAME, OnxInit)
+	native.Register(TRANSFER_NAME, OnxTransfer)
+	native.Register(APPROVE_NAME, OnxApprove)
+	native.Register(TRANSFERFROM_NAME, OnxTransferFrom)
+	native.Register(NAME_NAME, OnxName)
+	native.Register(SYMBOL_NAME, OnxSymbol)
+	native.Register(DECIMALS_NAME, OnxDecimals)
+	native.Register(TOTALSUPPLY_NAME, OnxTotalSupply)
+	native.Register(BALANCEOF_NAME, OnxBalanceOf)
+	native.Register(ALLOWANCE_NAME, OnxAllowance)
 }
 
-func OnyxInit(native *native.NativeService) ([]byte, error) {
+func OnxInit(native *native.NativeService) ([]byte, error) {
 	contract := native.ContextRef.CurrentContext().ContractAddress
 	amount, err := utils.GetStorageUInt64(native, GenTotalSupplyKey(contract))
 	if err != nil {
@@ -62,7 +62,7 @@ func OnyxInit(native *native.NativeService) ([]byte, error) {
 	}
 
 	if amount > 0 {
-		return utils.BYTE_FALSE, errors.NewErr("Init onyx has been completed!")
+		return utils.BYTE_FALSE, errors.NewErr("Init onx has been completed!")
 	}
 
 	distribute := make(map[common.Address]uint64)
@@ -96,8 +96,8 @@ func OnyxInit(native *native.NativeService) ([]byte, error) {
 		}
 		distribute[addr] += value
 	}
-	if sum != constants.ONYX_TOTAL_SUPPLY {
-		return utils.BYTE_FALSE, fmt.Errorf("wrong config. total supply %d != %d", sum, constants.ONYX_TOTAL_SUPPLY)
+	if sum != constants.ONX_TOTAL_SUPPLY {
+		return utils.BYTE_FALSE, fmt.Errorf("wrong config. total supply %d != %d", sum, constants.ONX_TOTAL_SUPPLY)
 	}
 
 	for addr, val := range distribute {
@@ -106,12 +106,12 @@ func OnyxInit(native *native.NativeService) ([]byte, error) {
 		native.CacheDB.Put(balanceKey, item.ToArray())
 		AddNotifications(native, contract, &State{To: addr, Value: val})
 	}
-	native.CacheDB.Put(GenTotalSupplyKey(contract), utils.GenUInt64StorageItem(constants.ONYX_TOTAL_SUPPLY).ToArray())
+	native.CacheDB.Put(GenTotalSupplyKey(contract), utils.GenUInt64StorageItem(constants.ONX_TOTAL_SUPPLY).ToArray())
 
 	return utils.BYTE_TRUE, nil
 }
 
-func OnyxTransfer(native *native.NativeService) ([]byte, error) {
+func OnxTransfer(native *native.NativeService) ([]byte, error) {
 	var transfers Transfers
 	source := common.NewZeroCopySource(native.Input)
 	if err := transfers.Deserialization(source); err != nil {
@@ -122,8 +122,8 @@ func OnyxTransfer(native *native.NativeService) ([]byte, error) {
 		if v.Value == 0 {
 			continue
 		}
-		if v.Value > constants.ONYX_TOTAL_SUPPLY {
-			return utils.BYTE_FALSE, fmt.Errorf("transfer onyx amount:%d over totalSupply:%d", v.Value, constants.ONYX_TOTAL_SUPPLY)
+		if v.Value > constants.ONX_TOTAL_SUPPLY {
+			return utils.BYTE_FALSE, fmt.Errorf("transfer onx amount:%d over totalSupply:%d", v.Value, constants.ONX_TOTAL_SUPPLY)
 		}
 		fromBalance, toBalance, err := Transfer(native, contract, &v)
 		if err != nil {
@@ -143,17 +143,17 @@ func OnyxTransfer(native *native.NativeService) ([]byte, error) {
 	return utils.BYTE_TRUE, nil
 }
 
-func OnyxTransferFrom(native *native.NativeService) ([]byte, error) {
+func OnxTransferFrom(native *native.NativeService) ([]byte, error) {
 	var state TransferFrom
 	source := common.NewZeroCopySource(native.Input)
 	if err := state.Deserialization(source); err != nil {
-		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnyxTransferFrom] State deserialize error!")
+		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnxTransferFrom] State deserialize error!")
 	}
 	if state.Value == 0 {
 		return utils.BYTE_FALSE, nil
 	}
-	if state.Value > constants.ONYX_TOTAL_SUPPLY {
-		return utils.BYTE_FALSE, fmt.Errorf("transferFrom onyx amount:%d over totalSupply:%d", state.Value, constants.ONYX_TOTAL_SUPPLY)
+	if state.Value > constants.ONX_TOTAL_SUPPLY {
+		return utils.BYTE_FALSE, fmt.Errorf("transferFrom onx amount:%d over totalSupply:%d", state.Value, constants.ONX_TOTAL_SUPPLY)
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
 	fromBalance, toBalance, err := TransferedFrom(native, contract, &state)
@@ -170,7 +170,7 @@ func OnyxTransferFrom(native *native.NativeService) ([]byte, error) {
 	return utils.BYTE_TRUE, nil
 }
 
-func OnyxApprove(native *native.NativeService) ([]byte, error) {
+func OnxApprove(native *native.NativeService) ([]byte, error) {
 	var state State
 	source := common.NewZeroCopySource(native.Input)
 	if err := state.Deserialization(source); err != nil {
@@ -179,8 +179,8 @@ func OnyxApprove(native *native.NativeService) ([]byte, error) {
 	if state.Value == 0 {
 		return utils.BYTE_FALSE, nil
 	}
-	if state.Value > constants.ONYX_TOTAL_SUPPLY {
-		return utils.BYTE_FALSE, fmt.Errorf("approve onyx amount:%d over totalSupply:%d", state.Value, constants.ONYX_TOTAL_SUPPLY)
+	if state.Value > constants.ONX_TOTAL_SUPPLY {
+		return utils.BYTE_FALSE, fmt.Errorf("approve onx amount:%d over totalSupply:%d", state.Value, constants.ONX_TOTAL_SUPPLY)
 	}
 	if native.ContextRef.CheckWitness(state.From) == false {
 		return utils.BYTE_FALSE, errors.NewErr("authentication failed!")
@@ -190,32 +190,32 @@ func OnyxApprove(native *native.NativeService) ([]byte, error) {
 	return utils.BYTE_TRUE, nil
 }
 
-func OnyxName(native *native.NativeService) ([]byte, error) {
-	return []byte(constants.ONYX_NAME), nil
+func OnxName(native *native.NativeService) ([]byte, error) {
+	return []byte(constants.ONX_NAME), nil
 }
 
-func OnyxDecimals(native *native.NativeService) ([]byte, error) {
-	return types.BigIntToBytes(big.NewInt(int64(constants.ONYX_DECIMALS))), nil
+func OnxDecimals(native *native.NativeService) ([]byte, error) {
+	return types.BigIntToBytes(big.NewInt(int64(constants.ONX_DECIMALS))), nil
 }
 
-func OnyxSymbol(native *native.NativeService) ([]byte, error) {
-	return []byte(constants.ONYX_SYMBOL), nil
+func OnxSymbol(native *native.NativeService) ([]byte, error) {
+	return []byte(constants.ONX_SYMBOL), nil
 }
 
-func OnyxTotalSupply(native *native.NativeService) ([]byte, error) {
+func OnxTotalSupply(native *native.NativeService) ([]byte, error) {
 	contract := native.ContextRef.CurrentContext().ContractAddress
 	amount, err := utils.GetStorageUInt64(native, GenTotalSupplyKey(contract))
 	if err != nil {
-		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnyxTotalSupply] get totalSupply error!")
+		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnxTotalSupply] get totalSupply error!")
 	}
 	return types.BigIntToBytes(big.NewInt(int64(amount))), nil
 }
 
-func OnyxBalanceOf(native *native.NativeService) ([]byte, error) {
+func OnxBalanceOf(native *native.NativeService) ([]byte, error) {
 	return GetBalanceValue(native, TRANSFER_FLAG)
 }
 
-func OnyxAllowance(native *native.NativeService) ([]byte, error) {
+func OnxAllowance(native *native.NativeService) ([]byte, error) {
 	return GetBalanceValue(native, APPROVE_FLAG)
 }
 
@@ -253,7 +253,7 @@ func grantOxg(native *native.NativeService, contract, address common.Address, ba
 	}
 	endOffset := native.Time - constants.GENESIS_BLOCK_TIMESTAMP
 	if endOffset < startOffset {
-		errstr := fmt.Sprintf("grant oxg error: wrong timestamp endOffset: %d < startOffset: %d", endOffset, startOffset)
+		errstr := fmt.Sprintf("grant Oxg error: wrong timestamp endOffset: %d < startOffset: %d", endOffset, startOffset)
 		log.Error(errstr)
 		return errors.NewErr(errstr)
 	} else if endOffset == startOffset {

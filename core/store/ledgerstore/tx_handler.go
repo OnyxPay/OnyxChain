@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package ledgerstore
@@ -38,7 +38,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/smartcontract/event"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/global_params"
 	ninit "github.com/OnyxPay/OnyxChain/smartcontract/service/native/init"
-	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onyx"
+	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/neovm"
 	"github.com/OnyxPay/OnyxChain/smartcontract/storage"
@@ -256,7 +256,7 @@ func SaveNotify(eventStore scommon.EventStore, txHash common.Uint256, notify *ev
 }
 
 func genNativeTransferCode(from, to common.Address, value uint64) []byte {
-	transfer := onyx.Transfers{States: []onyx.State{{From: from, To: to, Value: value}}}
+	transfer := onx.Transfers{States: []onx.State{{From: from, To: to, Value: value}}}
 	tr := new(bytes.Buffer)
 	transfer.Serialize(tr)
 	return tr.Bytes()
@@ -350,7 +350,7 @@ func getBalanceFromNative(config *smartcontract.Config, cache *storage.CacheDB, 
 	}
 
 	service, _ := sc.NewNativeService()
-	result, err := service.NativeCall(utils.OxgContractAddress, onyx.BALANCEOF_NAME, bf.Bytes())
+	result, err := service.NativeCall(utils.OxgContractAddress, onx.BALANCEOF_NAME, bf.Bytes())
 	if err != nil {
 		return 0, err
 	}

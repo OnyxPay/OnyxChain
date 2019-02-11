@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -41,19 +41,19 @@ func TestParseOxg(t *testing.T) {
 	assert.Equal(t, uint64(1000000000000000001), ParseOxg("1000000000.000000001123"))
 }
 
-func TestFormatOnyx(t *testing.T) {
-	assert.Equal(t, "0", FormatOnyx(0))
-	assert.Equal(t, "1", FormatOnyx(1))
-	assert.Equal(t, "100", FormatOnyx(100))
-	assert.Equal(t, "1000000000", FormatOnyx(1000000000))
+func TestFormatOnx(t *testing.T) {
+	assert.Equal(t, "0", FormatOnx(0))
+	assert.Equal(t, "1", FormatOnx(1))
+	assert.Equal(t, "100", FormatOnx(100))
+	assert.Equal(t, "1000000000", FormatOnx(1000000000))
 }
 
-func TestParseOnyx(t *testing.T) {
-	assert.Equal(t, uint64(0), ParseOnyx("0"))
-	assert.Equal(t, uint64(1), ParseOnyx("1"))
-	assert.Equal(t, uint64(1000), ParseOnyx("1000"))
-	assert.Equal(t, uint64(1000000000), ParseOnyx("1000000000"))
-	assert.Equal(t, uint64(1000000), ParseOnyx("1000000.123"))
+func TestParseOnx(t *testing.T) {
+	assert.Equal(t, uint64(0), ParseOnx("0"))
+	assert.Equal(t, uint64(1), ParseOnx("1"))
+	assert.Equal(t, uint64(1000), ParseOnx("1000"))
+	assert.Equal(t, uint64(1000000000), ParseOnx("1000000000"))
+	assert.Equal(t, uint64(1000000), ParseOnx("1000000.123"))
 }
 
 func TestGenExportBlocksFileName(t *testing.T) {

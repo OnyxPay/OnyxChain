@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2018 The OnyxChain Authors
- * This file is part of The OnyxChain library.
+ * Copyright (C) 2018 The onyxchain Authors
+ * This file is part of The onyxchain library.
  *
- * The OnyxChain is free software: you can redistribute it and/or modify
+ * The onyxchain is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The OnyxChain is distributed in the hope that it will be useful,
+ * The onyxchain is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with The OnyxChain.  If not, see <http://www.gnu.org/licenses/>.
+ * along with The onyxchain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package utils
@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	DEFAULT_EXPORT_FILE   = "./OnyxBlocks.dat"
+	DEFAULT_EXPORT_FILE   = "./OnxBlocks.dat"
 	DEFAULT_ABI_PATH      = "./abi"
 	DEFAULT_EXPORT_HEIGHT = 0
 	DEFAULT_WALLET_PATH   = "./wallet_data"
@@ -113,7 +113,7 @@ var (
 	}
 	NetworkIdFlag = cli.UintFlag{
 		Name:  "networkid",
-		Usage: "Network id `<number>`. 1=OnyxChain main net, 2=polaris test net, 3=testmode, and other for custom network",
+		Usage: "Network id `<number>`. 1=onyxchain main net, 2=polaris test net, 3=testmode, and other for custom network",
 		Value: config.NETWORK_ID_MAIN_NET,
 	}
 	NodePortFlag = cli.UintFlag{
@@ -260,8 +260,8 @@ var (
 		Usage: "Pub key list of multi `<addresses>`, separate addreses with comma `,`",
 	}
 	IdentityFlag = cli.BoolFlag{
-		Name:  "onyxid",
-		Usage: "create an ONYX ID instead of account",
+		Name:  "onxid",
+		Usage: "create an ONX ID instead of account",
 	}
 
 	//SmartContract setting
@@ -330,8 +330,8 @@ var (
 	//Transfer setting
 	TransactionAssetFlag = cli.StringFlag{
 		Name:  "asset",
-		Usage: "Asset of ONYX or oxg",
-		Value: ASSET_ONT,
+		Usage: "Asset of ONX or OXG",
+		Value: ASSET_ONX,
 	}
 	TransactionFromFlag = cli.StringFlag{
 		Name:  "from",
@@ -375,8 +375,8 @@ var (
 	}
 	ApproveAssetFlag = cli.StringFlag{
 		Name:  "asset",
-		Usage: "Asset of ONYX of oxg to approve",
-		Value: "onyx",
+		Usage: "Asset of ONX of OXG to approve",
+		Value: "onx",
 	}
 	ApproveAmountFlag = cli.StringFlag{
 		Name:  "amount",
@@ -406,11 +406,11 @@ var (
 		Name:  "prepare,p",
 		Usage: "Prepare execute transaction, without commit to ledger",
 	}
-	WithdrawONGReceiveAccountFlag = cli.StringFlag{
+	WithdrawOXGReceiveAccountFlag = cli.StringFlag{
 		Name:  "receive",
-		Usage: "oxg receive `<address>`，Default the same with owner account",
+		Usage: "OXG receive `<address>`，Default the same with owner account",
 	}
-	WithdrawONGAmountFlag = cli.StringFlag{
+	WithdrawOXGAmountFlag = cli.StringFlag{
 		Name:  "amount",
 		Usage: "Withdraw amount `<number>`, Float number. Default withdraw all",
 	}
