@@ -202,7 +202,7 @@ func transferTx(ctx *cli.Context) error {
 	var amount uint64
 	amountStr := ctx.String(utils.TransactionAmountFlag.Name)
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":
@@ -277,7 +277,7 @@ func approveTx(ctx *cli.Context) error {
 
 	var amount uint64
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":
@@ -366,7 +366,7 @@ func transferFromTx(ctx *cli.Context) error {
 
 	var amount uint64
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":

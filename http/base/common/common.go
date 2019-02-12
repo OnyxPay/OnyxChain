@@ -47,7 +47,7 @@ import (
 const MAX_SEARCH_HEIGHT uint32 = 100
 
 type BalanceOfRsp struct {
-	Onx string `json:"onx"`
+	Onx string `json:"onyx"`
 	Oxg string `json:"oxg"`
 }
 
@@ -297,7 +297,7 @@ func GetGrantOxg(addr common.Address) (string, error) {
 func GetAllowance(asset string, from, to common.Address) (string, error) {
 	var contractAddr common.Address
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		contractAddr = utils.OnxContractAddress
 	case "oxg":
 		contractAddr = utils.OxgContractAddress

@@ -535,7 +535,7 @@ func (e *ExecutionEngine) call(caller common.Address,
 //other imports will raise an error
 func importer(name string) (*wasm.Module, error) {
 	//TODO add the path into config file
-	if name != "ONX" {
+	if name != "ONYX" {
 		return nil, errors.NewErr("import [" + name + "] is not supported! ")
 	}
 	f, err := os.Open(name + ".wasm")

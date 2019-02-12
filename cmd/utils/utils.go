@@ -83,9 +83,9 @@ func ParseOnx(rawAmount string) uint64 {
 
 func CheckAssetAmount(asset string, amount uint64) error {
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		if amount > constants.ONX_TOTAL_SUPPLY {
-			return fmt.Errorf("amount:%d larger than ONX total supply:%d", amount, constants.ONX_TOTAL_SUPPLY)
+			return fmt.Errorf("amount:%d larger than ONYX total supply:%d", amount, constants.ONX_TOTAL_SUPPLY)
 		}
 	case "oxg":
 		if amount > constants.OXG_TOTAL_SUPPLY {

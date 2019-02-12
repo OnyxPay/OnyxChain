@@ -43,7 +43,7 @@ func init() {
 	log.Init(log.PATH, log.Stdout)
 	topic = "TXN"
 
-	code := []byte("onx")
+	code := []byte("onyx")
 
 	invokeCodePayload := &payload.InvokeCode{
 		Code: code,

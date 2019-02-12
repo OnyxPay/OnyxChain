@@ -80,7 +80,7 @@ func TestSigRawTx(t *testing.T) {
 		t.Errorf("GetDefaultAccount error:%s", err)
 		return
 	}
-	mutable, err := utils.TransferTx(0, 0, "onx", defAcc.Address.ToBase58(), acc.Address.ToBase58(), 10)
+	mutable, err := utils.TransferTx(0, 0, "onyx", defAcc.Address.ToBase58(), acc.Address.ToBase58(), 10)
 	if err != nil {
 		t.Errorf("TransferTx error:%s", err)
 		return

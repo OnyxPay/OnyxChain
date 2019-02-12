@@ -375,8 +375,8 @@ var (
 	}
 	ApproveAssetFlag = cli.StringFlag{
 		Name:  "asset",
-		Usage: "Asset of ONX of OXG to approve",
-		Value: "onx",
+		Usage: "Asset of ONYX of OXG to approve",
+		Value: "onyx",
 	}
 	ApproveAmountFlag = cli.StringFlag{
 		Name:  "amount",

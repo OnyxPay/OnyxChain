@@ -55,7 +55,7 @@ const (
 	CONTRACT_TRANSFER_FROM = "transferFrom"
 	CONTRACT_APPROVE       = "approve"
 
-	ASSET_ONX = "onx"
+	ASSET_ONX = "onyx"
 	ASSET_OXG = "oxg"
 )
 
@@ -88,7 +88,7 @@ func GetAccountBalance(address, asset string) (uint64, error) {
 	}
 	var balance uint64
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		balance, err = strconv.ParseUint(balances.Onx, 10, 64)
 	case "oxg":
 		balance, err = strconv.ParseUint(balances.Oxg, 10, 64)

@@ -30,8 +30,8 @@ var (
 
 // onx constants
 const (
-	ONX_NAME         = "ONX Token"
-	ONX_SYMBOL       = "ONX"
+	ONX_NAME         = "ONYX Token"
+	ONX_SYMBOL       = "ONYX"
 	ONX_DECIMALS     = 1
 	ONX_TOTAL_SUPPLY = uint64(1000000000)
 )

@@ -33,7 +33,7 @@ import (
 var AssetCommand = cli.Command{
 	Name:        "asset",
 	Usage:       "Handle assets",
-	Description: "Asset management commands can check account balance, ONX/OXG transfers, extract OXGs, and view unbound OXGs, and so on.",
+	Description: "Asset management commands can check account balance, ONYX/OXG transfers, extract OXGs, and view unbound OXGs, and so on.",
 	Subcommands: []cli.Command{
 		{
 			Action:      transfer,
@@ -162,7 +162,7 @@ func transfer(ctx *cli.Context) error {
 	var amount uint64
 	amountStr := ctx.String(utils.TransactionAmountFlag.Name)
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":
@@ -244,7 +244,7 @@ func getBalance(ctx *cli.Context) error {
 		return err
 	}
 	PrintInfoMsg("BalanceOf:%s", accAddr)
-	PrintInfoMsg("  ONX:%s", balance.Onx)
+	PrintInfoMsg("  ONYX:%s", balance.Onx)
 	PrintInfoMsg("  OXG:%s", utils.FormatOxg(oxg))
 	return nil
 }
@@ -275,7 +275,7 @@ func getAllowance(ctx *cli.Context) error {
 		return err
 	}
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 	case "oxg":
 		balance, err := strconv.ParseUint(balanceStr, 10, 64)
 		if err != nil {
@@ -316,7 +316,7 @@ func approve(ctx *cli.Context) error {
 	}
 	var amount uint64
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":
@@ -405,7 +405,7 @@ func transferFrom(ctx *cli.Context) error {
 
 	var amount uint64
 	switch strings.ToLower(asset) {
-	case "onx":
+	case "onyx":
 		amount = utils.ParseOnx(amountStr)
 		amountStr = utils.FormatOnx(amount)
 	case "oxg":

@@ -119,8 +119,8 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 }
 
 func newGoverningToken() *types.Transaction {
-	mutable := utils.NewDeployTransaction(nutils.OnxContractAddress[:], "ONX", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONX Token", true)
+	mutable := utils.NewDeployTransaction(nutils.OnxContractAddress[:], "ONYX", "1.0",
+		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONYX Token", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("constract genesis governing token transaction error ")

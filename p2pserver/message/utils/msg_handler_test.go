@@ -443,7 +443,7 @@ func TestNotFoundHandle(t *testing.T) {
 
 // TestTransactionHandle tests Function TransactionHandle handling a transaction message
 func TestTransactionHandle(t *testing.T) {
-	code := []byte("onx")
+	code := []byte("onyx")
 	vmcode := vmtypes.VmCode{
 		VmType: vmtypes.Native,
 		Code:   code,
