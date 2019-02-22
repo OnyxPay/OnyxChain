@@ -30,10 +30,12 @@ var (
 
 // onx constants
 const (
-	ONX_NAME         = "ONYX Token"
-	ONX_SYMBOL       = "ONYX"
-	ONX_DECIMALS     = 1
-	ONX_TOTAL_SUPPLY = uint64(1000000000)
+	ONX_NAME           = "ONYX Token"
+	ONX_SYMBOL         = "ONYX"
+	ONX_DECIMALS       = 1 * 8
+	ONX_DECIMALS_RATIO = uint64(100000000) // 10 ** 8
+	ONX_RATIO          = uint64(10 * ONX_DECIMALS_RATIO)
+	ONX_TOTAL_SUPPLY   = uint64(1000000000) * ONX_RATIO
 )
 
 // oxg constants
@@ -60,11 +62,11 @@ var UNBOUND_DEADLINE = (func() uint32 {
 	numInterval := len(UNBOUND_GENERATION_AMOUNT)
 
 	if UNBOUND_GENERATION_AMOUNT[numInterval-1] != 1 ||
-		!(count-uint64(UNBOUND_TIME_INTERVAL) < ONX_TOTAL_SUPPLY && ONX_TOTAL_SUPPLY <= count) {
+		(count-uint64(UNBOUND_TIME_INTERVAL) > ONX_TOTAL_SUPPLY/ONX_RATIO && ONX_TOTAL_SUPPLY/ONX_RATIO > count) {
 		panic("incompatible constants setting")
 	}
 
-	return UNBOUND_TIME_INTERVAL*uint32(numInterval) - uint32(count-uint64(ONX_TOTAL_SUPPLY))
+	return UNBOUND_TIME_INTERVAL*uint32(numInterval) - uint32(count-uint64(ONX_TOTAL_SUPPLY)/ONX_RATIO)
 })()
 
 // multi-sig constants

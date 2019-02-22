@@ -48,5 +48,8 @@ func CalcUnbindOxg(balance uint64, startOffset, endOffset uint32) uint64 {
 		amount += uint64(iend-istart) * GENERATION_AMOUNT[ustart]
 	}
 
-	return uint64(amount) * balance
+	if balance < constants.ONX_RATIO {
+		return 0
+	}
+	return uint64(amount) * (balance / constants.ONX_RATIO)
 }
