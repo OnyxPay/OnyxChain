@@ -263,7 +263,7 @@ func (this *NeoVmService) SystemCall(engine *vm.ExecutionEngine) error {
 		return err
 	}
 	if serviceName == "Ontology.Native.Invoke" {
-		serviceName := "OnyxChain.Native.Invoke"
+		serviceName = "OnyxChain.Native.Invoke"
 	}
 	service, ok := ServiceMap[serviceName]
 	if !ok {
