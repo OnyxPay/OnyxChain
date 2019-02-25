@@ -541,7 +541,7 @@ func (this *PreConfig) Deserialize(r io.Reader) error {
 
 type GlobalParam struct {
 	CandidateFee uint64 //unit: 10^-9 oxg
-	MinInitStake uint32 //min init pos
+	MinInitStake uint64 //min init pos
 	CandidateNum uint32 //num of candidate and consensus node
 	PosLimit     uint32 //authorize pos limit is initPos*posLimit
 	A            uint32 //fee split to all consensus node
@@ -611,7 +611,7 @@ func (this *GlobalParam) Deserialize(r io.Reader) error {
 	if err != nil {
 		return fmt.Errorf("utils.ReadVarUint, deserialize penalty error: %v", err)
 	}
-	if minInitStake > math.MaxUint32 {
+	if minInitStake > math.MaxUint64 {
 		return fmt.Errorf("minInitStake larger than max of uint32")
 	}
 	if candidateNum > math.MaxUint32 {
@@ -633,7 +633,7 @@ func (this *GlobalParam) Deserialize(r io.Reader) error {
 		return fmt.Errorf("penalty larger than max of uint32")
 	}
 	this.CandidateFee = candidateFee
-	this.MinInitStake = uint32(minInitStake)
+	this.MinInitStake = uint64(minInitStake)
 	this.CandidateNum = uint32(candidateNum)
 	this.PosLimit = uint32(posLimit)
 	this.A = uint32(a)
