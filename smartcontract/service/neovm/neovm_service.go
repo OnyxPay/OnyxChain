@@ -262,6 +262,9 @@ func (this *NeoVmService) SystemCall(engine *vm.ExecutionEngine) error {
 	if err != nil {
 		return err
 	}
+	if serviceName == "Ontology.Native.Invoke" {
+		serviceName := "OnyxChain.Native.Invoke"
+	}
 	service, ok := ServiceMap[serviceName]
 	if !ok {
 		return errors.NewErr(fmt.Sprintf("[SystemCall] service not support: %s", serviceName))
