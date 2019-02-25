@@ -258,7 +258,7 @@ func (this *NeoVmService) Invoke() (interface{}, error) {
 func (this *NeoVmService) SystemCall(engine *vm.ExecutionEngine) error {
 	serviceName := engine.Context.OpReader.ReadVarString(vm.MAX_BYTEARRAY_SIZE)
 	if serviceName == "Ontology.Native.Invoke" {
-		serviceName := "OnyxChain.Native.Invoke"
+		serviceName = "OnyxChain.Native.Invoke"
 	}
 	service, ok := ServiceMap[serviceName]
 	if !ok {
