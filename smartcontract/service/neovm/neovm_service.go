@@ -257,9 +257,6 @@ func (this *NeoVmService) Invoke() (interface{}, error) {
 // SystemCall provide register service for smart contract to interaction with blockchain
 func (this *NeoVmService) SystemCall(engine *vm.ExecutionEngine) error {
 	serviceName := engine.Context.OpReader.ReadVarString(vm.MAX_BYTEARRAY_SIZE)
-	if serviceName == "Ontology.Native.Invoke" {
-		serviceName = "OnyxChain.Native.Invoke"
-	}
 	service, ok := ServiceMap[serviceName]
 	if !ok {
 		return errors.NewErr(fmt.Sprintf("[SystemCall] service not support: %s", serviceName))
