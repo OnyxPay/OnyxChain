@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ func setupAPP() *cli.App {
 	app.Usage = "OnyxChain CLI"
 	app.Action = startOnyxChain
 	app.Version = config.Version
-	app.Copyright = "Copyright in 2018 The OnyxChain Authors"
+	app.Copyright = "Copyright in 2019 The OnyxChain Authors"
 	app.Commands = []cli.Command{
 		cmd.AccountCommand,
 		cmd.InfoCommand,
