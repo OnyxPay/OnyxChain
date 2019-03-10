@@ -120,7 +120,7 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 
 func newGoverningToken() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.OnxContractAddress[:], "ONYX", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONYX Token", true)
+		"OnyxChain Team", "contact@onyxpay.co", "OnyxChain Network ONYX Token", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("construct genesis governing token transaction error ")
@@ -130,7 +130,7 @@ func newGoverningToken() *types.Transaction {
 
 func newUtilityToken() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.OxgContractAddress[:], "OXG", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network OXG Token", true)
+		"OnyxChain Team", "contact@onyxpay.co", "OnyxChain Network OXG Token", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("construct genesis utility token transaction error ")
@@ -140,7 +140,7 @@ func newUtilityToken() *types.Transaction {
 
 func newParamContract() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.ParamContractAddress[:],
-		"ParamConfig", "1.0", "OnyxChain Team", "contact@onx.io",
+		"ParamConfig", "1.0", "OnyxChain Team", "contact@onyxpay.co",
 		"Chain Global Environment Variables Manager ", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
@@ -151,7 +151,7 @@ func newParamContract() *types.Transaction {
 
 func newGovConfigTx() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.GovernanceContractAddress[:], "CONFIG", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network Consensus Config", true)
+		"OnyxChain Team", "contact@onyxpay.co", "OnyxChain Network Consensus Config", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("construct genesis config transaction error ")
@@ -161,7 +161,7 @@ func newGovConfigTx() *types.Transaction {
 
 func deployAuthContract() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.AuthContractAddress[:], "AuthContract", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network Authorization Contract", true)
+		"OnyxChain Team", "contact@onyxpay.co", "OnyxChain Network Authorization Contract", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("construct genesis auth transaction error ")
@@ -171,7 +171,7 @@ func deployAuthContract() *types.Transaction {
 
 func deployOnxIDContract() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.OnxIDContractAddress[:], "OID", "1.0",
-		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONX ID", true)
+		"OnyxChain Team", "contact@onyxpay.co", "OnyxChain Network ONX ID", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
 		panic("construct genesis onxid transaction error ")
