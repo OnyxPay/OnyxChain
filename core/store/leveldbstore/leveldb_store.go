@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -139,7 +139,7 @@ func (self *LevelDBStore) Close() error {
 	return err
 }
 
-//NewIterator return a iterator of leveldb with the key perfix
+//NewIterator return a iterator of leveldb with the key prefix
 func (self *LevelDBStore) NewIterator(prefix []byte) common.StoreIterator {
 
 	iter := self.db.NewIterator(util.BytesPrefix(prefix), nil)

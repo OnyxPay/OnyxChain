@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -99,7 +99,7 @@ func sendRpcRequest(method string, params []interface{}) ([]byte, *OnyxChainErro
 		return nil, NewOnyxChainError(fmt.Errorf("json.Unmarshal JsonRpcResponse:%s error:%s", body, err))
 	}
 	if rpcRsp.Error != 0 {
-		return nil, NewOnyxChainError(fmt.Errorf("%s", strings.ToLower(rpcRsp.Desc)), rpcRsp.Error)
+		return nil, NewOnyxChainError(fmt.Errorf("\n %s ", string(body)), rpcRsp.Error)
 	}
 	return rpcRsp.Result, nil
 }

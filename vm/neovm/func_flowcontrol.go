@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -27,7 +27,11 @@ func opNop(e *ExecutionEngine) (VMState, error) {
 }
 
 func opJmp(e *ExecutionEngine) (VMState, error) {
-	offset := int(e.Context.OpReader.ReadInt16())
+	num, err := e.Context.OpReader.ReadInt16()
+	if err != nil {
+		return FAULT, err
+	}
+	offset := int(num)
 
 	offset = e.Context.GetInstructionPointer() + offset - 3
 

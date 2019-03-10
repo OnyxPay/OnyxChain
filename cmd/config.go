@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -177,6 +177,7 @@ func setRpcConfig(ctx *cli.Context, cfg *config.RpcConfig) {
 func setRestfulConfig(ctx *cli.Context, cfg *config.RestfulConfig) {
 	cfg.EnableHttpRestful = ctx.Bool(utils.GetFlagName(utils.RestfulEnableFlag))
 	cfg.HttpRestPort = ctx.Uint(utils.GetFlagName(utils.RestfulPortFlag))
+	cfg.HttpMaxConnections = ctx.Uint(utils.GetFlagName(utils.RestfulMaxConnsFlag))
 }
 
 func setWebSocketConfig(ctx *cli.Context, cfg *config.WebSocketConfig) {

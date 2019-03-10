@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -106,7 +106,7 @@ func NewWalletStore(path string) (*WalletStore, error) {
 	}
 	walletExtra, err := walletStore.getWalletExtra()
 	if err != nil {
-		return nil, fmt.Errorf("getWalletExtra error", err)
+		return nil, fmt.Errorf("getWalletExtra error: %v", err)
 	}
 	walletStore.nextAccountIndex = nextAccountIndex
 	walletStore.WalletScrypt = walletScrypt

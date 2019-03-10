@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -18,12 +18,14 @@
 
 package neovm
 
+import "math/big"
+
 func opInvert(e *ExecutionEngine) (VMState, error) {
 	i, err := PopBigInt(e)
 	if err != nil {
 		return FAULT, err
 	}
-	PushData(e, i.Not(i))
+	PushData(e, big.NewInt(0).Not(i))
 	return NONE, nil
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -439,13 +439,13 @@ func (p *MemDB) Reset() {
 // reclaim KV buffer.
 //
 // The returned MemDB instance is safe for concurrent use.
-func NewMemDB(capacity int) *MemDB {
+func NewMemDB(capacity int, kvNum int) *MemDB {
 	p := &MemDB{
 		cmp:       comparer.DefaultComparer,
 		rnd:       rand.New(rand.NewSource(0xdeadbeef)),
 		maxHeight: 1,
 		kvData:    make([]byte, 0, capacity),
-		nodeData:  make([]int, 4+tMaxHeight),
+		nodeData:  make([]int, 4+tMaxHeight, (4+tMaxHeight)*(1+kvNum)),
 	}
 	p.nodeData[nHeight] = tMaxHeight
 	return p

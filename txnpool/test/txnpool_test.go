@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -67,7 +67,7 @@ func Test_RCV(t *testing.T) {
 	var s *tp.TXPoolServer
 	var wg sync.WaitGroup
 	var err error
-	ledger.DefLedger, err = ledger.NewLedger(config.DEFAULT_DATA_DIR)
+	ledger.DefLedger, err = ledger.NewLedger(config.DEFAULT_DATA_DIR, 0)
 	if err != nil {
 		t.Error("failed  to new ledger")
 		return

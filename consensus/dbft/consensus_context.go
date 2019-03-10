@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ func (ctx *ConsensusContext) MakeHeader() *types.Block {
 			txHash = append(txHash, t.Hash())
 		}
 		txRoot := common.ComputeMerkleRoot(txHash)
-		blockRoot := ledger.DefLedger.GetBlockRootWithNewTxRoot(txRoot)
+		blockRoot := ledger.DefLedger.GetBlockRootWithNewTxRoots(ctx.Height, []common.Uint256{txRoot})
 		header := &types.Header{
 			Version:          ContextVersion,
 			PrevBlockHash:    ctx.PrevHash,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -47,10 +47,11 @@ func NewAddrReq() mt.Message {
 }
 
 ///block package
-func NewBlock(bk *ct.Block) mt.Message {
+func NewBlock(bk *ct.Block, merkleRoot common.Uint256) mt.Message {
 	log.Trace()
 	var blk mt.Block
 	blk.Blk = bk
+	blk.MerkleRoot = merkleRoot
 
 	return &blk
 }

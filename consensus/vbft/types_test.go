@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -211,7 +211,7 @@ func TestInitVbftBlock(t *testing.T) {
 	if err != nil {
 		t.Errorf("constructBlock failed: %v", err)
 	}
-	_, err = initVbftBlock(blk.Block)
+	_, err = initVbftBlock(blk.Block, common.Uint256{})
 	if err != nil {
 		t.Errorf("initVbftBlock failed: %v", err)
 		return

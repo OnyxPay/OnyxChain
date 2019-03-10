@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 
+	com "github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/core/types"
 )
 
@@ -145,9 +146,10 @@ type AppendHeaders struct {
 }
 
 type AppendBlock struct {
-	FromID    uint64       // The peer id
-	BlockSize uint32       // Block size
-	Block     *types.Block // Block to be added to the ledger
+	FromID     uint64       // The peer id
+	BlockSize  uint32       // Block size
+	Block      *types.Block // Block to be added to the ledger
+	MerkleRoot com.Uint256  // MerkleRoot
 }
 
 //ParseIPAddr return ip address

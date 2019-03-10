@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/common/log"
 	"github.com/OnyxPay/OnyxChain/core/ledger"
 )
@@ -128,9 +129,22 @@ func (self *Syncer) run() {
 				req.startBlockNum = self.server.GetCommittedBlockNo() + 1
 				log.Infof("server %d, sync req start change to %d",
 					self.server.Index, req.startBlockNum)
-				if req.startBlockNum > req.targetBlockNum {
-					continue
+			}
+			for ; req.startBlockNum <= req.targetBlockNum; req.startBlockNum++ {
+				blk, _ := self.server.chainStore.GetBlock(req.startBlockNum)
+				if blk == nil {
+					log.Infof("server %d, on starting syncing %d, nil block from ledger",
+						self.server.Index, req.startBlockNum)
+					break
 				}
+				if err := self.server.fastForwardBlock(blk); err != nil {
+					log.Infof("server %d, on starting syncing %d, %s",
+						self.server.Index, req.startBlockNum, err)
+					break
+				}
+			}
+			if req.startBlockNum > req.targetBlockNum {
+				continue
 			}
 			if err := self.onNewBlockSyncReq(req); err != nil {
 				log.Errorf("server %d failed to handle new block sync req: %s", self.server.Index, err)
@@ -172,8 +186,23 @@ func (self *Syncer) run() {
 				}
 				if blk == nil {
 					blk = self.blockConsensusDone(self.pendingBlocks[self.nextReqBlkNum])
+					merkBlk := self.blockCheckMerkleRoot(self.pendingBlocks[self.nextReqBlkNum])
+					if blk == nil || merkBlk == nil {
+						break
+					}
+					if blk.getPrevBlockMerkleRoot() != merkBlk.getPrevBlockMerkleRoot() {
+						break
+					}
+				} else {
+					merkleRoot, err := self.server.chainStore.GetExecMerkleRoot(blkNum - 1)
+					if err != nil {
+						log.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, (blkNum - 1))
+						break
+					}
+					if blk.getPrevBlockMerkleRoot() != merkleRoot {
+						break
+					}
 				}
-
 				if blk == nil {
 					break
 				}
@@ -222,6 +251,33 @@ func (self *Syncer) blockConsensusDone(blks BlockFromPeers) *Block {
 			// find the block
 			for _, blk := range blks {
 				if blk.getProposer() == proposerId {
+					return blk
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (self *Syncer) getCurrentTargetBlockNum() uint32 {
+	var targetBlkNum uint32
+	for _, syncer := range self.peers {
+		if syncer.active && syncer.targetBlkNum > targetBlkNum {
+			targetBlkNum = syncer.targetBlkNum
+		}
+	}
+	return targetBlkNum
+}
+func (self *Syncer) blockCheckMerkleRoot(blks BlockFromPeers) *Block {
+	merkleRoot := make(map[common.Uint256]int)
+	for _, blk := range blks {
+		merkleRoot[blk.getPrevBlockMerkleRoot()] += 1
+	}
+	for merklerootvalue, cnt := range merkleRoot {
+		if cnt > int(self.server.config.C) {
+			// find the block
+			for _, blk := range blks {
+				if blk.getPrevBlockMerkleRoot() == merklerootvalue {
 					return blk
 				}
 			}

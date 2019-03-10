@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -19,25 +19,22 @@
 package utils
 
 import (
-	"github.com/OnyxPay/OnyxChain-crypto/keypair"
 	"github.com/OnyxPay/OnyxChain-eventbus/actor"
 	"github.com/OnyxPay/OnyxChain/common/log"
-	msgCommon "github.com/OnyxPay/OnyxChain/p2pserver/common"
+	"github.com/OnyxPay/OnyxChain/p2pserver/message/types"
 	"github.com/OnyxPay/OnyxChain/p2pserver/net/netserver"
 	"github.com/OnyxPay/OnyxChain/p2pserver/net/protocol"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func testHandler(data *msgCommon.MsgPayload, p2p p2p.P2P, pid *actor.PID, args ...interface{}) error {
+func testHandler(data *types.MsgPayload, p2p p2p.P2P, pid *actor.PID, args ...interface{}) {
 	log.Info("Test handler")
-	return nil
 }
 
 // TestMsgRouter tests a basic function of a message router
 func TestMsgRouter(t *testing.T) {
-	_, pub, _ := keypair.GenerateKeyPair(keypair.PK_ECDSA, keypair.P256)
-	network := netserver.NewNetServer(pub)
+	network := netserver.NewNetServer()
 	msgRouter := NewMsgRouter(network)
 	assert.NotNil(t, msgRouter)
 

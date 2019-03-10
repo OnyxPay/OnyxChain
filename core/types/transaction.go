@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -107,6 +107,9 @@ func (tx *Transaction) Deserialization(source *common.ZeroCopySource) error {
 
 	pend := source.Pos()
 	lenAll := pend - pstart
+	if lenAll > MAX_TX_SIZE {
+		return fmt.Errorf("execced max transaction size:%d", lenAll)
+	}
 	source.BackUp(lenAll)
 	tx.Raw, _ = source.NextBytes(lenAll)
 

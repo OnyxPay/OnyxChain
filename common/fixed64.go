@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ package common
 
 import (
 	"bytes"
-	"encoding/binary"
 	"io"
 	"strconv"
 )
@@ -32,14 +31,19 @@ const (
 	Decimal = 100000000
 )
 
-func (f *Fixed64) Serialize(w io.Writer) error {
-	err := binary.Write(w, binary.LittleEndian, int64(*f))
-	return err
+func (f *Fixed64) Serialization(sink *ZeroCopySink) {
+	sink.WriteInt64(int64(*f))
 }
 
-func (f *Fixed64) Deserialize(r io.Reader) error {
-	err := binary.Read(r, binary.LittleEndian, f)
-	return err
+func (f *Fixed64) Deserialization(source *ZeroCopySource) error {
+	var eof bool
+
+	t, eof := source.NextInt64()
+	if eof {
+		return io.ErrUnexpectedEOF
+	}
+	*f = Fixed64(t)
+	return nil
 }
 
 func FromDecimal(value int64) Fixed64 {

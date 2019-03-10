@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -103,7 +103,11 @@ func (this *ExecutionEngine) StepInto() error {
 
 func (this *ExecutionEngine) ExecuteOp() (VMState, error) {
 	if this.OpCode >= PUSHBYTES1 && this.OpCode <= PUSHBYTES75 {
-		PushData(this, this.Context.OpReader.ReadBytes(int(this.OpCode)))
+		bs, err := this.Context.OpReader.ReadBytes(int(this.OpCode))
+		if err != nil {
+			return FAULT, err
+		}
+		PushData(this, bs)
 		return NONE, nil
 	}
 

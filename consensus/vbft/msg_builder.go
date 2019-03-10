@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ func DeserializeVbftMsg(msgPayload []byte) (ConsensusMsg, error) {
 	case BlockFetchRespMessage:
 		t := &BlockFetchRespMsg{}
 		if err := t.Deserialize(m.Payload); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal msg (type: %d): %s", m.Type, err)
+			return nil, fmt.Errorf("failed to Deserialize msg (type: %d): %s", m.Type, err)
 		}
 		return t, nil
 	case ProposalFetchMessage:
@@ -182,8 +182,14 @@ func (self *Server) constructBlock(blkNum uint32, prevBlkHash common.Uint256, tx
 	for _, t := range txs {
 		txHash = append(txHash, t.Hash())
 	}
+	lastBlock, err := self.chainStore.GetBlock(blkNum - 1)
+	if err != nil {
+		log.Errorf("constructBlock getlastblock err:%s,blknum:%d", err, blkNum-1)
+		return nil, err
+	}
+
 	txRoot := common.ComputeMerkleRoot(txHash)
-	blockRoot := ledger.DefLedger.GetBlockRootWithNewTxRoot(txRoot)
+	blockRoot := ledger.DefLedger.GetBlockRootWithNewTxRoots(lastBlock.Block.Header.Height, []common.Uint256{lastBlock.Block.Header.TransactionsRoot, txRoot})
 
 	blkHeader := &types.Header{
 		PrevBlockHash:    prevBlkHash,
@@ -252,12 +258,17 @@ func (self *Server) constructProposalMsg(blkNum uint32, sysTxs, userTxs []*types
 	if err != nil {
 		return nil, fmt.Errorf("failed to constuct blk: %s", err)
 	}
+	merkleRoot, err := self.chainStore.GetExecMerkleRoot(blkNum - 1)
+	if err != nil {
+		return nil, fmt.Errorf("failed to GetExecMerkleRoot: %s,blkNum:%d", err, (blkNum - 1))
+	}
 
 	msg := &blockProposalMsg{
 		Block: &Block{
-			Block:      blk,
-			EmptyBlock: emptyBlk,
-			Info:       vbftBlkInfo,
+			Block:               blk,
+			EmptyBlock:          emptyBlk,
+			Info:                vbftBlkInfo,
+			PrevBlockMerkleRoot: merkleRoot,
 		},
 	}
 

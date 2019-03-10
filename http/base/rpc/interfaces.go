@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -83,9 +83,7 @@ func GetBlock(params []interface{}) map[string]interface{} {
 			return responsePack(berr.INVALID_PARAMS, "")
 		}
 	}
-	w := bytes.NewBuffer(nil)
-	block.Serialize(w)
-	return responseSuccess(common.ToHexString(w.Bytes()))
+	return responseSuccess(common.ToHexString(block.ToArray()))
 }
 
 //get block height
@@ -288,7 +286,7 @@ func SendRawTransaction(params []interface{}) map[string]interface{} {
 						log.Infof("PreExec: ", err)
 						return responsePack(berr.SMARTCODE_ERROR, err.Error())
 					}
-					return responseSuccess(result)
+					return responseSuccess(bcomn.ConvertPreExecuteResult(result))
 				}
 			}
 		}

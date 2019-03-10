@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -176,7 +176,7 @@ func (self *EventTimer) getEventTimeout(evtType TimerEventType) time.Duration {
 		}
 		return time.Duration(100 * time.Second)
 	case EventRandomBackoff:
-		d := (rand.Int63n(100) + 50) * int64(endorseBlockTimeout) / 100
+		d := (rand.Int63n(100) + 50) * int64(endorseBlockTimeout) / 10
 		return time.Duration(d)
 	case EventTxPool:
 		return txPooltimeout

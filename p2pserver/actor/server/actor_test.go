@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OnyxPay/OnyxChain/account"
 	"github.com/OnyxPay/OnyxChain/common/log"
 	"github.com/OnyxPay/OnyxChain/p2pserver"
 	"github.com/OnyxPay/OnyxChain/p2pserver/common"
@@ -33,10 +32,9 @@ func TestP2PActorServer(t *testing.T) {
 	log.Init(log.Stdout)
 	fmt.Println("Start test the p2pserver by actor...")
 
-	acct := account.NewAccount("SHA256withECDSA")
-	p2p, err := p2pserver.NewServer(acct)
-	if err != nil {
-		t.Fatalf("TestP2PActorServer: p2pserver NewServer error %s", err)
+	p2p := p2pserver.NewServer()
+	if p2p == nil {
+		t.Fatalf("TestP2PActorServer: p2pserver NewServer error")
 	}
 
 	p2pActor := NewP2PActor(p2p)
@@ -47,15 +45,8 @@ func TestP2PActorServer(t *testing.T) {
 
 	//test server api
 
-	//false: disable sync,running without ledger
-	future := p2pPID.RequestFuture(&StartServerReq{StartSync: false}, common.ACTOR_TIMEOUT*time.Second)
+	future := p2pPID.RequestFuture(&GetConnectionCntReq{}, common.ACTOR_TIMEOUT*time.Second)
 	result, err := future.Result()
-	if err != nil {
-		t.Fatalf("TestP2PActorServer: p2p start error %s", err)
-	}
-
-	future = p2pPID.RequestFuture(&GetConnectionCntReq{}, common.ACTOR_TIMEOUT*time.Second)
-	result, err = future.Result()
 	if err != nil {
 		t.Errorf("GetConnectionCntReq error %s", err)
 	}
@@ -144,10 +135,11 @@ func TestP2PActorServer(t *testing.T) {
 		t.Error("GetNodeTypeRsp error")
 	}
 
+	/* meaningless case at present
 	future = p2pPID.RequestFuture(&StopServerReq{}, common.ACTOR_TIMEOUT*time.Second)
 	result, err = future.Result()
 	if err != nil {
 		t.Fatalf("TestP2PActorServer: p2p halt error %s", err)
 	}
-
+	*/
 }

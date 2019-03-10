@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -64,5 +64,6 @@ type P2P interface {
 	NodeEstablished(uint64) bool
 	Xmit(msg types.Message, isCons bool)
 	SetOwnAddress(addr string)
+	IsOwnAddress(addr string) bool
 	IsAddrFromConnecting(addr string) bool
 }

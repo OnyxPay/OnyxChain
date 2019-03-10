@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 package websocket
 
 import (
-	"bytes"
 	"github.com/OnyxPay/OnyxChain/common"
 	cfg "github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
@@ -108,9 +107,7 @@ func pushBlock(v interface{}) {
 	resp := rest.ResponsePack(Err.SUCCESS)
 	if block, ok := v.(types.Block); ok {
 		resp["Action"] = "sendrawblock"
-		w := bytes.NewBuffer(nil)
-		block.Serialize(w)
-		resp["Result"] = common.ToHexString(w.Bytes())
+		resp["Result"] = common.ToHexString(block.ToArray())
 		ws.BroadcastToSubscribers(nil, websocket.WSTOPIC_RAW_BLOCK, resp)
 
 		resp["Action"] = "sendjsonblock"

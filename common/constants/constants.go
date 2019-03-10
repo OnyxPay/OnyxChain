@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ var (
 const (
 	ONX_NAME         = "ONYX Token"
 	ONX_SYMBOL       = "ONYX"
-	ONX_DECIMALS     = 1
+	ONX_DECIMALS     = 0
 	ONX_TOTAL_SUPPLY = uint64(1000000000)
 )
 
@@ -78,3 +78,7 @@ const (
 	NETWORK_MAGIC_MAINNET = 0x8c77ab60
 	NETWORK_MAGIC_POLARIS = 0x2d8829df
 )
+
+// ledger state hash check height
+const STATE_HASH_HEIGHT_MAINNET = 3000000
+const STATE_HASH_HEIGHT_POLARIS = 850000

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -21,10 +21,10 @@ package merkle
 import (
 	"crypto/sha256"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/OnyxPay/OnyxChain/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMerkleLeaf3(t *testing.T) {
@@ -62,6 +62,20 @@ func TestMerkleLeaf3(t *testing.T) {
 		}
 	}
 
+}
+
+func TestCompactMerkleTree_GetRootWithNewLeaves(t *testing.T) {
+	N := 1000
+	tree1 := NewTree(0, nil, nil)
+	tree2 := NewTree(0, nil, nil)
+	leaves := make([]common.Uint256, N)
+	for i := 0; i < N; i++ {
+		leaves[i][:][0] = byte(i)
+		hash := leaves[i]
+		assert.Equal(t, tree1.GetRootWithNewLeaf(hash), tree2.GetRootWithNewLeaves([]common.Uint256{hash}))
+		tree1.AppendHash(hash)
+		tree2.AppendHash(hash)
+	}
 }
 
 func TestMerkle(t *testing.T) {
@@ -253,20 +267,23 @@ func BenchmarkMerkleInsert2(b *testing.B) {
 	}
 }
 
-//
-
-func TestNewFileSeek(t *testing.T) {
-	name := "test.txt"
-	f, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE, 0755)
-	if err != nil {
-		t.Fatal("can not open file", err)
+func TestTreeHasher_HashFullTree(t *testing.T) {
+	debugCheck = true
+	leaves := make([][]byte, 0)
+	for i := byte(0); i < 200; i++ {
+		leaves = append(leaves, []byte{i})
+		TreeHasher{}.HashFullTree(leaves)
 	}
-	off, err := f.Seek(0, 2)
-	f.Write([]byte{12})
-	a := float64(9999999999996841)
-	b := int64(a)
+}
 
-	t.Fatal(b, "haha")
-
-	t.Fatal(off, err)
+func TestTreeHasher(t *testing.T) {
+	tree := NewTree(0, nil, nil)
+	leaves := make([][]byte, 0)
+	for i := uint32(0); i < 1000; i++ {
+		leaf := []byte{byte(i + 1)}
+		leaves = append(leaves, leaf)
+		tree.Append(leaf)
+		root := TreeHasher{}.HashFullTree(leaves)
+		assert.Equal(t, root, tree.Root())
+	}
 }

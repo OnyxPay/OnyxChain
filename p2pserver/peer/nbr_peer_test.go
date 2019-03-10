@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -130,10 +130,10 @@ func TestGetNeighborAddrs(t *testing.T) {
 	p.SetSyncState(4)
 
 	pList := nm.GetNeighborAddrs()
-	for i := 0; i < int(cnt); i++ {
+	for i := 0; i < len(pList); i++ {
 		fmt.Printf("peer id = %x \n", pList[i].ID)
 	}
-	if cnt != 2 {
+	if len(pList) != 2 {
 		t.Fatal("TestGetNeighborAddrs error")
 	}
 }

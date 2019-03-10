@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -458,11 +458,11 @@ func withdrawOXGTx(ctx *cli.Context) error {
 	}
 
 	var receiveAddr string
-	receive := ctx.String(utils.GetFlagName(utils.TransferFromSenderFlag))
+	receive := ctx.String(utils.GetFlagName(utils.WithdrawOXGReceiveAccountFlag))
 	if receive == "" {
 		receiveAddr = accAddr
 	} else {
-		receiveAddr, err = cmdcom.ParseAddress(receiveAddr, ctx)
+		receiveAddr, err = cmdcom.ParseAddress(receive, ctx)
 		if err != nil {
 			return err
 		}

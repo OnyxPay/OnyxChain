@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 	govConfig := newGoverConfigInit(conf.Bytes())
 	consensusPayload, err := vconfig.GenesisConsensusPayload(govConfig.Hash(), 0)
 	if err != nil {
-		return nil, fmt.Errorf("consensus genesus init failed: %s", err)
+		return nil, fmt.Errorf("consensus genesis init failed: %s", err)
 	}
 	//blockdata
 	genesisHeader := &types.Header{
@@ -97,7 +97,7 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 	param := newParamContract()
 	oid := deployOnxIDContract()
 	auth := deployAuthContract()
-	config := newConfig()
+	govConfigTx := newGovConfigTx()
 
 	genesisBlock := &types.Block{
 		Header: genesisHeader,
@@ -107,7 +107,7 @@ func BuildGenesisBlock(defaultBookkeeper []keypair.PublicKey, genesisConfig *con
 			param,
 			oid,
 			auth,
-			config,
+			govConfigTx,
 			newGoverningInit(),
 			newUtilityInit(),
 			newParamInit(),
@@ -123,7 +123,7 @@ func newGoverningToken() *types.Transaction {
 		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONYX Token", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis governing token transaction error ")
+		panic("construct genesis governing token transaction error ")
 	}
 	return tx
 }
@@ -133,7 +133,7 @@ func newUtilityToken() *types.Transaction {
 		"OnyxChain Team", "contact@onx.io", "OnyxChain Network OXG Token", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis utility token transaction error ")
+		panic("construct genesis utility token transaction error ")
 	}
 	return tx
 }
@@ -144,17 +144,17 @@ func newParamContract() *types.Transaction {
 		"Chain Global Environment Variables Manager ", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis param transaction error ")
+		panic("construct genesis param transaction error ")
 	}
 	return tx
 }
 
-func newConfig() *types.Transaction {
+func newGovConfigTx() *types.Transaction {
 	mutable := utils.NewDeployTransaction(nutils.GovernanceContractAddress[:], "CONFIG", "1.0",
 		"OnyxChain Team", "contact@onx.io", "OnyxChain Network Consensus Config", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis config transaction error ")
+		panic("construct genesis config transaction error ")
 	}
 	return tx
 }
@@ -164,7 +164,7 @@ func deployAuthContract() *types.Transaction {
 		"OnyxChain Team", "contact@onx.io", "OnyxChain Network Authorization Contract", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis auth transaction error ")
+		panic("construct genesis auth transaction error ")
 	}
 	return tx
 }
@@ -174,7 +174,7 @@ func deployOnxIDContract() *types.Transaction {
 		"OnyxChain Team", "contact@onx.io", "OnyxChain Network ONX ID", true)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis onxid transaction error ")
+		panic("construct genesis onxid transaction error ")
 	}
 	return tx
 }
@@ -209,7 +209,7 @@ func newGoverningInit() *types.Transaction {
 	mutable := utils.BuildNativeTransaction(nutils.OnxContractAddress, onx.INIT_NAME, args.Bytes())
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis governing token transaction error ")
+		panic("construct genesis governing token transaction error ")
 	}
 	return tx
 }
@@ -218,7 +218,7 @@ func newUtilityInit() *types.Transaction {
 	mutable := utils.BuildNativeTransaction(nutils.OxgContractAddress, onx.INIT_NAME, []byte{})
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis governing token transaction error ")
+		panic("construct genesis utility token transaction error ")
 	}
 
 	return tx
@@ -260,7 +260,7 @@ func newParamInit() *types.Transaction {
 	mutable := utils.BuildNativeTransaction(nutils.ParamContractAddress, global_params.INIT_NAME, bf.Bytes())
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis governing token transaction error ")
+		panic("construct genesis governing token transaction error ")
 	}
 	return tx
 }
@@ -269,7 +269,7 @@ func newGoverConfigInit(config []byte) *types.Transaction {
 	mutable := utils.BuildNativeTransaction(nutils.GovernanceContractAddress, governance.INIT_CONFIG, config)
 	tx, err := mutable.IntoImmutable()
 	if err != nil {
-		panic("constract genesis governing token transaction error ")
+		panic("construct genesis governing token transaction error ")
 	}
 	return tx
 }

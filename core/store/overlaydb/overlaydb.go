@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -32,10 +32,13 @@ type OverlayDB struct {
 	dbErr error
 }
 
+const initCap = 4 * 1024 * 1024
+const initkvNum = 1024
+
 func NewOverlayDB(store common.PersistStore) *OverlayDB {
 	return &OverlayDB{
 		store: store,
-		memdb: NewMemDB(0),
+		memdb: NewMemDB(initCap, initkvNum),
 	}
 }
 
@@ -87,6 +90,10 @@ func (self *OverlayDB) CommitTo() {
 			self.store.BatchPut(key, val)
 		}
 	})
+}
+
+func (self *OverlayDB) GetWriteSet() *MemDB {
+	return self.memdb
 }
 
 func (self *OverlayDB) ChangeHash() comm.Uint256 {

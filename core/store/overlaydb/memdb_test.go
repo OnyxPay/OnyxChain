@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import (
 )
 
 func TestIter(t *testing.T) {
-	db := NewMemDB(0)
+	db := NewMemDB(0, 0)
 	db.Put([]byte("aaa"), []byte("bbb"))
 	iter := db.NewIterator(nil)
 	assert.Equal(t, iter.First(), true)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/common/log"
 	berr "github.com/OnyxPay/OnyxChain/http/base/error"
 	"github.com/OnyxPay/OnyxChain/http/base/rest"
+	"golang.org/x/net/netutil"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -113,6 +114,10 @@ func (this *restServer) Start() error {
 		}
 	}
 	this.server = &http.Server{Handler: this.router}
+	//set LimitListener number
+	if cfg.DefConfig.Restful.HttpMaxConnections > 0 {
+		this.listener = netutil.LimitListener(this.listener, int(cfg.DefConfig.Restful.HttpMaxConnections))
+	}
 	err := this.server.Serve(this.listener)
 
 	if err != nil {

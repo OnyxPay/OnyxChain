@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -23,17 +23,28 @@ import (
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/core/payload"
 	"github.com/OnyxPay/OnyxChain/core/states"
+	"github.com/OnyxPay/OnyxChain/core/store/overlaydb"
 	"github.com/OnyxPay/OnyxChain/core/types"
 	"github.com/OnyxPay/OnyxChain/smartcontract/event"
 	cstates "github.com/OnyxPay/OnyxChain/smartcontract/states"
 )
+
+type ExecuteResult struct {
+	WriteSet   *overlaydb.MemDB
+	Hash       common.Uint256
+	MerkleRoot common.Uint256
+	Notify     []*event.ExecuteNotify
+}
 
 // LedgerStore provides func with store package.
 type LedgerStore interface {
 	InitLedgerStoreWithGenesisBlock(genesisblock *types.Block, defaultBookkeeper []keypair.PublicKey) error
 	Close() error
 	AddHeaders(headers []*types.Header) error
-	AddBlock(block *types.Block) error
+	AddBlock(block *types.Block, stateMerkleRoot common.Uint256) error
+	ExecuteBlock(b *types.Block) (ExecuteResult, error)   // called by consensus
+	SubmitBlock(b *types.Block, exec ExecuteResult) error // called by consensus
+	GetStateMerkleRoot(height uint32) (result common.Uint256, err error)
 	GetCurrentBlockHash() common.Uint256
 	GetCurrentBlockHeight() uint32
 	GetCurrentHeaderHeight() uint32
@@ -46,7 +57,7 @@ type LedgerStore interface {
 	GetTransaction(txHash common.Uint256) (*types.Transaction, uint32, error)
 	IsContainBlock(blockHash common.Uint256) (bool, error)
 	IsContainTransaction(txHash common.Uint256) (bool, error)
-	GetBlockRootWithNewTxRoot(txRoot common.Uint256) common.Uint256
+	GetBlockRootWithNewTxRoots(startHeight uint32, txRoots []common.Uint256) common.Uint256
 	GetMerkleProof(m, n uint32) ([]common.Uint256, error)
 	GetContractState(contractHash common.Address) (*payload.DeployCode, error)
 	GetBookkeeperState() (*states.BookkeeperState, error)

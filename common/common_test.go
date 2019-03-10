@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -42,4 +43,9 @@ func TestFileExisted(t *testing.T) {
 	assert.False(t, FileExisted("../log/log.og"))
 	assert.False(t, FileExisted("../log/log.go"))
 	assert.True(t, FileExisted("./log/log.go"))
+}
+
+func TestBase58(t *testing.T) {
+	addr := ADDRESS_EMPTY
+	fmt.Println("emtpy addr:", addr.ToBase58())
 }

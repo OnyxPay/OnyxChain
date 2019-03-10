@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -185,6 +185,11 @@ var (
 		Name:  "restport",
 		Usage: "Restful server listening port `<number>`",
 		Value: config.DEFAULT_REST_PORT,
+	}
+	RestfulMaxConnsFlag = cli.UintFlag{
+		Name:  "restmaxconns",
+		Usage: "Restful server maximum connections `<number>`",
+		Value: config.DEFAULT_REST_MAX_CONN,
 	}
 
 	//Account setting

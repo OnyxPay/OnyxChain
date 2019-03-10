@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 package wasmvm
 
 import (
-	"bytes"
 	"github.com/OnyxPay/OnyxChain/core/types"
 	"github.com/OnyxPay/OnyxChain/errors"
 	"github.com/OnyxPay/OnyxChain/vm/wasmvm/exec"
@@ -36,8 +35,7 @@ func (this *WasmVmService) headerGetHash(engine *exec.ExecutionEngine) (bool, er
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -64,8 +62,7 @@ func (this *WasmVmService) headerGetVersion(engine *exec.ExecutionEngine) (bool,
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -89,8 +86,7 @@ func (this *WasmVmService) headerGetPrevHash(engine *exec.ExecutionEngine) (bool
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -117,8 +113,7 @@ func (this *WasmVmService) headerGetMerkleRoot(engine *exec.ExecutionEngine) (bo
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -145,8 +140,7 @@ func (this *WasmVmService) headerGetIndex(engine *exec.ExecutionEngine) (bool, e
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -170,8 +164,7 @@ func (this *WasmVmService) headerGetTimestamp(engine *exec.ExecutionEngine) (boo
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -195,8 +188,7 @@ func (this *WasmVmService) headerGetConsensusData(engine *exec.ExecutionEngine) 
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}
@@ -220,8 +212,7 @@ func (this *WasmVmService) headerGetNextConsensus(engine *exec.ExecutionEngine) 
 	if err != nil {
 		return false, err
 	}
-	header := &types.Header{}
-	err = header.Deserialize(bytes.NewBuffer(headerbytes))
+	header, err := types.HeaderFromRawBytes(headerbytes)
 	if err != nil {
 		return false, err
 	}

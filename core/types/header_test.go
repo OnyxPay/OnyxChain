@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -18,11 +18,11 @@
 package types
 
 import (
-	"bytes"
 	"fmt"
 	"testing"
 
 	"github.com/OnyxPay/OnyxChain-crypto/keypair"
+	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,17 +31,14 @@ func TestHeader_Serialize(t *testing.T) {
 	header.Height = 321
 	header.Bookkeepers = make([]keypair.PublicKey, 0)
 	header.SigData = make([][]byte, 0)
-	buf := bytes.NewBuffer(nil)
-	err := header.Serialize(buf)
-	bs := buf.Bytes()
-	assert.Nil(t, err)
+	sink := common.NewZeroCopySink(nil)
+	header.Serialization(sink)
+	bs := sink.Bytes()
 
 	var h2 Header
-	h2.Deserialize(buf)
+	source := common.NewZeroCopySource(bs)
+	err := h2.Deserialization(source)
 	assert.Equal(t, fmt.Sprint(header), fmt.Sprint(h2))
 
-	buf = bytes.NewBuffer(bs[:len(bs)-1])
-	err = h2.Deserialize(buf)
-
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 }

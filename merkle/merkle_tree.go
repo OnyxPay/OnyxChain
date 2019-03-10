@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -123,6 +123,28 @@ func (self *CompactMerkleTree) GetRootWithNewLeaf(newLeaf common.Uint256) common
 	root := self.hasher._hash_fold(hashes)
 
 	return root
+}
+
+// clone except internal hash storage
+func (self *CompactMerkleTree) cloneMem() CompactMerkleTree {
+	temp := CompactMerkleTree{mintree_h: self.mintree_h, hasher: self.hasher, hashStore: nil,
+		rootHash: self.rootHash, treeSize: self.treeSize,
+	}
+	temp.hashes = make([]common.Uint256, len(self.hashes))
+	for i, h := range self.hashes {
+		temp.hashes[i] = h
+	}
+
+	return temp
+}
+
+func (self *CompactMerkleTree) GetRootWithNewLeaves(newLeaf []common.Uint256) common.Uint256 {
+	tree := self.cloneMem()
+	for _, h := range newLeaf {
+		tree.AppendHash(h)
+	}
+
+	return tree.Root()
 }
 
 // Append appends a leaf to the merkle tree and returns the audit path

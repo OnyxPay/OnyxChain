@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ func (this *BlockCache) GetBlock(blockHash common.Uint256) *types.Block {
 	return block.(*types.Block)
 }
 
-//ContainBlock retuen whether block is in cache
+//ContainBlock return whether block is in cache
 func (this *BlockCache) ContainBlock(blockHash common.Uint256) bool {
 	return this.blockCache.Contains(string(blockHash.ToArray()))
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The onyxchain Authors
+ * Copyright (C) 2019 The onyxchain Authors
  * This file is part of The onyxchain library.
  *
  * The onyxchain is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import (
 func init() {
 	log.Init(log.PATH, log.Stdout)
 	var err error
-	ledger.DefLedger, err = ledger.NewLedger(config.DEFAULT_DATA_DIR)
+	ledger.DefLedger, err = ledger.NewLedger(config.DEFAULT_DATA_DIR, 0)
 	if err != nil {
 		return
 	}
