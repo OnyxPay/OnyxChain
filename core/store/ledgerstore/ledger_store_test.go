@@ -20,15 +20,13 @@ package ledgerstore
 
 import (
 	"fmt"
-	"os"
-	"testing"
-	"time"
-
 	"github.com/OnyxPay/OnyxChain-crypto/keypair"
 	"github.com/OnyxPay/OnyxChain/account"
-	"github.com/OnyxPay/OnyxChain/common"
+	"github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
-	"github.com/OnyxPay/OnyxChain/core/types"
+	"github.com/OnyxPay/OnyxChain/core/genesis"
+	"os"
+	"testing"
 )
 
 var testBlockStore *BlockStore
@@ -39,7 +37,7 @@ func TestMain(m *testing.M) {
 	log.InitLog(0)
 
 	var err error
-	testLedgerStore, err = NewLedgerStore("test/ledger")
+	testLedgerStore, err = NewLedgerStore("test/ledger", 0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "NewLedgerStore error %s\n", err)
 		return
@@ -53,7 +51,7 @@ func TestMain(m *testing.M) {
 	}
 	testStateDir := "test/state"
 	merklePath := "test/" + MerkleTreeStorePath
-	testStateStore, err = NewStateStore(testStateDir, merklePath)
+	testStateStore, err = NewStateStore(testStateDir, merklePath, 1000)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "NewStateStore error %s\n", err)
 		return
@@ -87,26 +85,31 @@ func TestInitLedgerStoreWithGenesisBlock(t *testing.T) {
 	acc2 := account.NewAccount("")
 	acc3 := account.NewAccount("")
 	acc4 := account.NewAccount("")
+	acc5 := account.NewAccount("")
+	acc6 := account.NewAccount("")
+	acc7 := account.NewAccount("")
 
-	bookkeepers := []keypair.PublicKey{acc1.PublicKey, acc2.PublicKey, acc3.PublicKey, acc4.PublicKey}
-	bookkeeper, err := types.AddressFromBookkeepers(bookkeepers)
-	if err != nil {
-		t.Errorf("AddressFromBookkeepers error %s", err)
-		return
-	}
-	header := &types.Header{
-		Version:          123,
-		PrevBlockHash:    common.Uint256{},
-		TransactionsRoot: common.Uint256{},
-		Timestamp:        uint32(uint32(time.Date(2017, time.February, 23, 0, 0, 0, 0, time.UTC).Unix())),
-		Height:           uint32(0),
-		ConsensusData:    1234567890,
-		NextBookkeeper:   bookkeeper,
-	}
-	block := &types.Block{
-		Header:       header,
-		Transactions: []*types.Transaction{},
-	}
+	bookkeepers := []keypair.PublicKey{acc1.PublicKey, acc2.PublicKey, acc3.PublicKey, acc4.PublicKey, acc5.PublicKey, acc6.PublicKey, acc7.PublicKey}
+	//bookkeeper, err := types.AddressFromBookkeepers(bookkeepers)
+	//if err != nil {
+	//	t.Errorf("AddressFromBookkeepers error %s", err)
+	//	return
+	//}
+	genesisConfig := config.DefConfig.Genesis
+	block, err := genesis.BuildGenesisBlock(bookkeepers, genesisConfig)
+	//header := &types.Header{
+	//	Version:          123,
+	//	PrevBlockHash:    common.Uint256{},
+	//	TransactionsRoot: common.Uint256{},
+	//	Timestamp:        uint32(uint32(time.Date(2017, time.February, 23, 0, 0, 0, 0, time.UTC).Unix())),
+	//	Height:           uint32(0),
+	//	ConsensusData:    1234567890,
+	//	NextBookkeeper:   bookkeeper,
+	//}
+	//block := &types.Block{
+	//	Header:       header,
+	//	Transactions: []*types.Transaction{},
+	//}
 
 	err = testLedgerStore.InitLedgerStoreWithGenesisBlock(block, bookkeepers)
 	if err != nil {

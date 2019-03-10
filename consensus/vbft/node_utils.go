@@ -209,10 +209,12 @@ func (self *Server) buildParticipantConfig(blkNum uint32, block *Block, chainCfg
 	}
 
 	s := 0
-	cfg.Proposers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_PROPOSER_COUNT)
-	if uint32(len(cfg.Proposers)) < chainCfg.C {
+
+	Proposers := calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_PROPOSER_COUNT)
+	if uint32(len(Proposers)) < chainCfg.C+1 {
 		return nil, fmt.Errorf("cfg Proposers length less than chainCfg.C:%d,%d", uint32(len(cfg.Proposers)), chainCfg.C)
 	}
+	cfg.Proposers = Proposers[:chainCfg.C+1]
 	s += vconfig.MAX_PROPOSER_COUNT
 	cfg.Endorsers = calcParticipantPeers(cfg, chainCfg, s, s+vconfig.MAX_ENDORSER_COUNT)
 	if uint32(len(cfg.Endorsers)) < 2*chainCfg.C {
@@ -233,12 +235,28 @@ func calcParticipantPeers(cfg *BlockParticipantConfig, chain *vconfig.ChainConfi
 
 	peers := make([]uint32, 0)
 	peerMap := make(map[uint32]bool)
+	proposerMap := make(map[uint32]bool)
 	var cnt uint32
 
+	if checkCalcEndorserOrCommitter(end) {
+		if len(cfg.Proposers) != 0 {
+			for _, p := range cfg.Proposers {
+				proposerMap[p] = true
+				if uint32(len(proposerMap)) >= chain.C {
+					break
+				}
+			}
+		}
+	}
 	for i := start; ; i++ {
 		peerId := calcParticipant(cfg.Vrf, chain.PosTable, uint32(i))
 		if peerId == math.MaxUint32 {
 			return []uint32{}
+		}
+		if checkCalcEndorserOrCommitter(end) {
+			if _, present := proposerMap[peerId]; present {
+				continue
+			}
 		}
 		if _, present := peerMap[peerId]; !present {
 			// got new peer
@@ -254,14 +272,21 @@ func calcParticipantPeers(cfg *BlockParticipantConfig, chain *vconfig.ChainConfi
 				return peers
 			}
 		}
-		if end == vconfig.MAX_ENDORSER_COUNT+vconfig.MAX_PROPOSER_COUNT ||
-			end == vconfig.MAX_PROPOSER_COUNT+vconfig.MAX_ENDORSER_COUNT+vconfig.MAX_COMMITTER_COUNT {
+		if checkCalcEndorserOrCommitter(end) {
 			if uint32(len(peers)) > chain.C*2 {
 				return peers
 			}
 		}
 	}
 	return peers
+}
+
+func checkCalcEndorserOrCommitter(end int) bool {
+	if end == vconfig.MAX_ENDORSER_COUNT+vconfig.MAX_PROPOSER_COUNT ||
+		end == vconfig.MAX_PROPOSER_COUNT+vconfig.MAX_ENDORSER_COUNT+vconfig.MAX_COMMITTER_COUNT {
+		return true
+	}
+	return false
 }
 
 func calcParticipant(vrf vconfig.VRFValue, dposTable []uint32, k uint32) uint32 {
@@ -298,14 +323,19 @@ func getCommitConsensus(commitMsgs []*blockCommitMsg, C int) (uint32, bool) {
 	commitCount := make(map[uint32]int)                  // proposer -> #commit-msg
 	endorseCount := make(map[uint32]map[uint32]struct{}) // proposer -> []endorsers
 	emptyCommitCount := 0
+	emptyCommit := false
 	for _, c := range commitMsgs {
 		if c.CommitForEmpty {
 			emptyCommitCount++
+			if emptyCommitCount > C && !emptyCommit {
+				C += 1
+				emptyCommit = true
+			}
 		}
 
 		commitCount[c.BlockProposer] += 1
 		if commitCount[c.BlockProposer] > C {
-			return c.BlockProposer, emptyCommitCount > C
+			return c.BlockProposer, emptyCommit
 		}
 
 		for endorser := range c.EndorsersSig {

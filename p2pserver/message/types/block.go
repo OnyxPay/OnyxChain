@@ -20,7 +20,6 @@ package types
 
 import (
 	"fmt"
-
 	"github.com/OnyxPay/OnyxChain/common"
 	ct "github.com/OnyxPay/OnyxChain/core/types"
 	"github.com/OnyxPay/OnyxChain/errors"
@@ -28,7 +27,8 @@ import (
 )
 
 type Block struct {
-	Blk *ct.Block
+	Blk        *ct.Block
+	MerkleRoot common.Uint256
 }
 
 //Serialize message payload
@@ -37,7 +37,7 @@ func (this *Block) Serialization(sink *common.ZeroCopySink) error {
 	if err != nil {
 		return errors.NewDetailErr(err, errors.ErrNetPackFail, fmt.Sprintf("serialize error. err:%v", err))
 	}
-
+	sink.WriteHash(this.MerkleRoot)
 	return nil
 }
 
@@ -53,5 +53,11 @@ func (this *Block) Deserialization(source *common.ZeroCopySource) error {
 		return errors.NewDetailErr(err, errors.ErrNetUnPackFail, fmt.Sprintf("read Blk error. err:%v", err))
 	}
 
+	eof := false
+	this.MerkleRoot, eof = source.NextHash()
+	if eof {
+		// to accept old node's block
+		this.MerkleRoot = common.UINT256_EMPTY
+	}
 	return nil
 }

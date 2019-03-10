@@ -524,7 +524,9 @@ func (pool *BlockPool) commitDone(blkNum uint32, C uint32, N uint32) (uint32, bo
 					endorseCnt[sig.EndorsedProposer] += 1
 					if endorseCnt[sig.EndorsedProposer] > C {
 						proposer = sig.EndorsedProposer
-						forEmpty = emptyCnt > C
+						if !forEmpty {
+							forEmpty = emptyCnt > C
+						}
 						break
 					}
 				}
@@ -608,7 +610,6 @@ func (pool *BlockPool) addSignaturesToBlockLocked(block *Block, forEmpty bool) e
 			}
 		}
 	}
-
 	if !forEmpty {
 		block.Block.Header.Bookkeepers = bookkeepers
 		block.Block.Header.SigData = sigData
@@ -620,7 +621,7 @@ func (pool *BlockPool) addSignaturesToBlockLocked(block *Block, forEmpty bool) e
 	return nil
 }
 
-func (pool *BlockPool) setBlockSealed(block *Block, forEmpty bool) error {
+func (pool *BlockPool) setBlockSealed(block *Block, forEmpty bool, sigdata bool) error {
 	pool.lock.Lock()
 	defer pool.lock.Unlock()
 
@@ -636,22 +637,25 @@ func (pool *BlockPool) setBlockSealed(block *Block, forEmpty bool) error {
 		}
 		return fmt.Errorf("double seal for block %d", blkNum)
 	}
-
-	if err := pool.addSignaturesToBlockLocked(block, forEmpty); err != nil {
-		return fmt.Errorf("failed to add sig to block: %s", err)
+	if sigdata {
+		if err := pool.addSignaturesToBlockLocked(block, forEmpty); err != nil {
+			return fmt.Errorf("failed to add sig to block: %s", err)
+		}
 	}
 
 	if !forEmpty {
 		// remove empty block
 		c.SealedBlock = &Block{
-			Block: block.Block,
-			Info:  block.Info,
+			Block:               block.Block,
+			Info:                block.Info,
+			PrevBlockMerkleRoot: block.PrevBlockMerkleRoot,
 		}
 	} else {
 		// replace with empty block
 		c.SealedBlock = &Block{
-			Block: block.EmptyBlock,
-			Info:  block.Info,
+			Block:               block.EmptyBlock,
+			Info:                block.Info,
+			PrevBlockMerkleRoot: block.PrevBlockMerkleRoot,
 		}
 	}
 

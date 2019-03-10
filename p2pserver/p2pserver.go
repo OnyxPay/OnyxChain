@@ -150,10 +150,6 @@ func (this *P2PServer) Xmit(message interface{}) error {
 		log.Debug("[p2p]TX transaction message")
 		txn := message.(*types.Transaction)
 		msg = msgpack.NewTxn(txn)
-	case *types.Block:
-		log.Debug("[p2p]TX block message")
-		block := message.(*types.Block)
-		msg = msgpack.NewBlock(block)
 	case *msgtypes.ConsensusPayload:
 		log.Debug("[p2p]TX consensus message")
 		consensusPayload := message.(*msgtypes.ConsensusPayload)
@@ -206,8 +202,9 @@ func (this *P2PServer) OnHeaderReceive(fromID uint64, headers []*types.Header) {
 }
 
 // OnBlockReceive adds the block from network
-func (this *P2PServer) OnBlockReceive(fromID uint64, blockSize uint32, block *types.Block) {
-	this.blockSync.OnBlockReceive(fromID, blockSize, block)
+func (this *P2PServer) OnBlockReceive(fromID uint64, blockSize uint32,
+	block *types.Block, merkleRoot comm.Uint256) {
+	this.blockSync.OnBlockReceive(fromID, blockSize, block, merkleRoot)
 }
 
 // Todo: remove it if no use
@@ -285,7 +282,6 @@ func (this *P2PServer) WaitForPeersStart() {
 //connectSeeds connect the seeds in seedlist and call for nbr list
 func (this *P2PServer) connectSeeds() {
 	seedNodes := make([]string, 0)
-	pList := make([]*peer.Peer, 0)
 	for _, n := range config.DefConfig.Genesis.SeedList {
 		ip, err := common.ParseIPAddr(n)
 		if err != nil {
@@ -305,25 +301,42 @@ func (this *P2PServer) connectSeeds() {
 		seedNodes = append(seedNodes, ns[0]+port)
 	}
 
-	for _, nodeAddr := range seedNodes {
-		var ip net.IP
-		np := this.network.GetNp()
-		np.Lock()
-		for _, tn := range np.List {
-			ipAddr, _ := tn.GetAddr16()
-			ip = ipAddr[:]
-			addrString := ip.To16().String() + ":" +
-				strconv.Itoa(int(tn.GetSyncPort()))
-			if nodeAddr == addrString && tn.GetSyncState() == common.ESTABLISH {
-				pList = append(pList, tn)
-			}
+	connPeers := make(map[string]*peer.Peer)
+	np := this.network.GetNp()
+	np.Lock()
+	for _, tn := range np.List {
+		ipAddr, _ := tn.GetAddr16()
+		ip := net.IP(ipAddr[:])
+		addrString := ip.To16().String() + ":" + strconv.Itoa(int(tn.GetSyncPort()))
+		if tn.GetSyncState() == common.ESTABLISH {
+			connPeers[addrString] = tn
 		}
-		np.Unlock()
 	}
-	if len(pList) > 0 {
+	np.Unlock()
+
+	seedConnList := make([]*peer.Peer, 0)
+	seedDisconn := make([]string, 0)
+	isSeed := false
+	for _, nodeAddr := range seedNodes {
+		if p, ok := connPeers[nodeAddr]; ok {
+			seedConnList = append(seedConnList, p)
+		} else {
+			seedDisconn = append(seedDisconn, nodeAddr)
+		}
+
+		if this.network.IsOwnAddress(nodeAddr) {
+			isSeed = true
+		}
+	}
+
+	if len(seedConnList) > 0 {
 		rand.Seed(time.Now().UnixNano())
-		index := rand.Intn(len(pList))
-		this.reqNbrList(pList[index])
+		index := rand.Intn(len(seedConnList))
+		this.reqNbrList(seedConnList[index])
+		if isSeed && len(seedDisconn) > 0 {
+			index := rand.Intn(len(seedDisconn))
+			go this.network.Connect(seedDisconn[index], false)
+		}
 	} else { //not found
 		for _, nodeAddr := range seedNodes {
 			go this.network.Connect(nodeAddr, false)

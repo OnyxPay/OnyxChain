@@ -19,21 +19,21 @@
 package vbft
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/OnyxPay/OnyxChain/common"
-	"github.com/OnyxPay/OnyxChain/common/serialization"
-	vconfig "github.com/OnyxPay/OnyxChain/consensus/vbft/config"
+	"github.com/OnyxPay/OnyxChain/common/log"
+	"github.com/OnyxPay/OnyxChain/consensus/vbft/config"
 	"github.com/OnyxPay/OnyxChain/core/types"
-	"io"
 )
 
 type Block struct {
-	Block      *types.Block
-	EmptyBlock *types.Block
-	Info       *vconfig.VbftBlockInfo
+	Block               *types.Block
+	EmptyBlock          *types.Block
+	Info                *vconfig.VbftBlockInfo
+	PrevBlockMerkleRoot common.Uint256
 }
 
 func (blk *Block) getProposer() uint32 {
@@ -56,6 +56,10 @@ func (blk *Block) getNewChainConfig() *vconfig.ChainConfig {
 	return blk.Info.NewChainConfig
 }
 
+func (blk *Block) getPrevBlockMerkleRoot() common.Uint256 {
+	return blk.PrevBlockMerkleRoot
+}
+
 //
 // getVrfValue() is a helper function for participant selection.
 //
@@ -68,26 +72,22 @@ func (blk *Block) getVrfProof() []byte {
 }
 
 func (blk *Block) Serialize() ([]byte, error) {
-	buf := bytes.NewBuffer([]byte{})
-	if err := blk.Block.Serialize(buf); err != nil {
+	sink := common.NewZeroCopySink(nil)
+	if err := blk.Block.Serialization(sink); err != nil {
 		return nil, fmt.Errorf("serialize block: %s", err)
 	}
 
-	payload := bytes.NewBuffer([]byte{})
-	if err := serialization.WriteVarBytes(payload, buf.Bytes()); err != nil {
-		return nil, fmt.Errorf("serialize block buf: %s", err)
-	}
+	payload := common.NewZeroCopySink(nil)
+	payload.WriteVarBytes(sink.Bytes())
 
 	if blk.EmptyBlock != nil {
-		buf2 := bytes.NewBuffer([]byte{})
-		if err := blk.EmptyBlock.Serialize(buf2); err != nil {
+		sink2 := common.NewZeroCopySink(nil)
+		if err := blk.EmptyBlock.Serialization(sink2); err != nil {
 			return nil, fmt.Errorf("serialize empty block: %s", err)
 		}
-		if err := serialization.WriteVarBytes(payload, buf2.Bytes()); err != nil {
-			return nil, fmt.Errorf("serialize empty block buf: %s", err)
-		}
+		payload.WriteVarBytes(sink2.Bytes())
 	}
-
+	payload.WriteHash(blk.PrevBlockMerkleRoot)
 	return payload.Bytes(), nil
 }
 
@@ -122,15 +122,22 @@ func (blk *Block) Deserialize(data []byte) error {
 			}
 		}
 	}
-
+	var merkleRoot common.Uint256
+	if source.Len() > 0 {
+		merkleRoot, eof = source.NextHash()
+		if eof {
+			log.Errorf("Block Deserialize merkleRoot")
+			return io.ErrUnexpectedEOF
+		}
+	}
 	blk.Block = block
 	blk.EmptyBlock = emptyBlock
 	blk.Info = info
-
+	blk.PrevBlockMerkleRoot = merkleRoot
 	return nil
 }
 
-func initVbftBlock(block *types.Block) (*Block, error) {
+func initVbftBlock(block *types.Block, prevMerkleRoot common.Uint256) (*Block, error) {
 	if block == nil {
 		return nil, fmt.Errorf("nil block in initVbftBlock")
 	}
@@ -141,7 +148,8 @@ func initVbftBlock(block *types.Block) (*Block, error) {
 	}
 
 	return &Block{
-		Block: block,
-		Info:  blkInfo,
+		Block:               block,
+		Info:                blkInfo,
+		PrevBlockMerkleRoot: prevMerkleRoot,
 	}, nil
 }

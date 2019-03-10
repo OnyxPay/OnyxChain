@@ -21,6 +21,9 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/gosuri/uiprogress"
 	"github.com/OnyxPay/OnyxChain/cmd/utils"
 	"github.com/OnyxPay/OnyxChain/common/config"
@@ -30,8 +33,6 @@ import (
 	"github.com/OnyxPay/OnyxChain/core/ledger"
 	"github.com/OnyxPay/OnyxChain/core/types"
 	"github.com/urfave/cli"
-	"io"
-	"os"
 )
 
 var ImportCommand = cli.Command{
@@ -53,7 +54,7 @@ var ImportCommand = cli.Command{
 func importBlocks(ctx *cli.Context) error {
 	log.InitLog(log.InfoLog)
 
-	_, err := SetOnyxChainConfig(ctx)
+	cfg, err := SetOnyxChainConfig(ctx)
 	if err != nil {
 		PrintErrorMsg("SetOnyxChainConfig error:%s", err)
 		cli.ShowSubcommandHelp(ctx)
@@ -61,7 +62,8 @@ func importBlocks(ctx *cli.Context) error {
 	}
 	dbDir := utils.GetStoreDirPath(config.DefConfig.Common.DataDir, config.DefConfig.P2PNode.NetworkName)
 
-	ledger.DefLedger, err = ledger.NewLedger(dbDir)
+	stateHashHeight := config.GetStateHashCheckHeight(cfg.P2PNode.NetworkId)
+	ledger.DefLedger, err = ledger.NewLedger(dbDir, stateHashHeight)
 	if err != nil {
 		return fmt.Errorf("NewLedger error:%s", err)
 	}
@@ -157,9 +159,13 @@ func importBlocks(ctx *cli.Context) error {
 		if err != nil {
 			return fmt.Errorf("block height:%d deserialize error:%s", i, err)
 		}
-		err = ledger.DefLedger.AddBlock(block)
+		execResult, err := ledger.DefLedger.ExecuteBlock(block)
 		if err != nil {
-			return fmt.Errorf("add block height:%d error:%s", i, err)
+			return fmt.Errorf("block height:%d ExecuteBlock error:%s", i, err)
+		}
+		err = ledger.DefLedger.SubmitBlock(block, execResult)
+		if err != nil {
+			return fmt.Errorf("SubmitBlock block height:%d error:%s", i, err)
 		}
 		bar.Incr()
 	}

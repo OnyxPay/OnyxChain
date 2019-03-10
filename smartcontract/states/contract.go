@@ -24,6 +24,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/common/serialization"
 	"github.com/OnyxPay/OnyxChain/errors"
+	"github.com/OnyxPay/OnyxChain/smartcontract/event"
 )
 
 // Invoke smart contract struct
@@ -113,4 +114,5 @@ type PreExecResult struct {
 	State  byte
 	Gas    uint64
 	Result interface{}
+	Notify []*event.NotifyEventInfo
 }

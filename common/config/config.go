@@ -57,6 +57,7 @@ const (
 	DEFAULT_RPC_LOCAL_PORT                  = uint(20337)
 	DEFAULT_REST_PORT                       = uint(20334)
 	DEFAULT_WS_PORT                         = uint(20335)
+	DEFAULT_REST_MAX_CONN                   = uint(1024)
 	DEFAULT_MAX_CONN_IN_BOUND               = uint(1024)
 	DEFAULT_MAX_CONN_OUT_BOUND              = uint(1024)
 	DEFAULT_MAX_CONN_IN_BOUND_FOR_SINGLE_IP = uint(16)
@@ -101,6 +102,16 @@ func GetNetworkMagic(id uint32) uint32 {
 		return nid
 	}
 	return id
+}
+
+var STATE_HASH_CHECK_HEIGHT = map[uint32]uint32{
+	NETWORK_ID_MAIN_NET:    constants.STATE_HASH_HEIGHT_MAINNET, //Network main
+	NETWORK_ID_POLARIS_NET: constants.STATE_HASH_HEIGHT_POLARIS, //Network polaris
+	NETWORK_ID_SOLO_NET:    0,                                   //Network solo
+}
+
+func GetStateHashCheckHeight(id uint32) uint32 {
+	return STATE_HASH_CHECK_HEIGHT[id]
 }
 
 func GetNetworkName(id uint32) string {
@@ -517,10 +528,11 @@ type RpcConfig struct {
 }
 
 type RestfulConfig struct {
-	EnableHttpRestful bool
-	HttpRestPort      uint
-	HttpCertPath      string
-	HttpKeyPath       string
+	EnableHttpRestful  bool
+	HttpRestPort       uint
+	HttpMaxConnections uint
+	HttpCertPath       string
+	HttpKeyPath        string
 }
 
 type WebSocketConfig struct {

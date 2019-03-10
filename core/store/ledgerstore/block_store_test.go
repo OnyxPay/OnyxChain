@@ -25,11 +25,11 @@ import (
 	"github.com/OnyxPay/OnyxChain-crypto/keypair"
 	"github.com/OnyxPay/OnyxChain/account"
 	"github.com/OnyxPay/OnyxChain/common"
-	"github.com/OnyxPay/OnyxChain/core/genesis"
 	"github.com/OnyxPay/OnyxChain/core/payload"
 	"github.com/OnyxPay/OnyxChain/core/types"
+	"github.com/OnyxPay/OnyxChain/core/utils"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
-	cstates "github.com/OnyxPay/OnyxChain/smartcontract/states"
+	nutils "github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
 	"testing"
 	"time"
 )
@@ -109,10 +109,11 @@ func TestBlockHash(t *testing.T) {
 
 func TestSaveTransaction(t *testing.T) {
 	invoke := &payload.InvokeCode{}
-	tx := &types.Transaction{
+	txTemp := &types.MutableTransaction{
 		TxType:  types.Invoke,
 		Payload: invoke,
 	}
+	tx, err := txTemp.IntoImmutable()
 	blockHeight := uint32(1)
 	txHash := tx.Hash()
 
@@ -355,8 +356,8 @@ func TestBlock(t *testing.T) {
 
 func transferTx(from, to common.Address, amount uint64) (*types.Transaction, error) {
 	buf := bytes.NewBuffer(nil)
-	var sts []*onx.State
-	sts = append(sts, &onx.State{
+	var sts []onx.State
+	sts = append(sts, onx.State{
 		From:  from,
 		To:    to,
 		Value: amount,
@@ -369,49 +370,39 @@ func transferTx(from, to common.Address, amount uint64) (*types.Transaction, err
 		return nil, fmt.Errorf("transfers.Serialize error %s", err)
 	}
 	var cversion byte
-	return invokeSmartContractTx(0, 30000, vmtypes.Native, cversion, genesis.OnxContractAddress, "transfer", buf.Bytes())
+	return invokeSmartContractTx(0, 30000, cversion, nutils.OnxContractAddress, "transfer", []interface{}{sts})
 }
 
 func invokeSmartContractTx(gasPrice,
 	gasLimit uint64,
-	vmType vmtypes.VmType,
 	cversion byte,
 	contractAddress common.Address,
 	method string,
-	args []byte) (*types.Transaction, error) {
-	crt := &cstates.ContractInvokeParam{
-		Version: cversion,
-		Address: contractAddress,
-		Method:  method,
-		Args:    args,
-	}
-	buf := bytes.NewBuffer(nil)
-	err := crt.Serialize(buf)
+	args []interface{}) (*types.Transaction, error) {
+
+	invokCode, err := utils.BuildNativeInvokeCode(contractAddress, cversion, method, args)
 	if err != nil {
-		return nil, fmt.Errorf("Serialize contract error:%s", err)
+		return nil, err
 	}
-	invokCode := buf.Bytes()
-	if vmType == vmtypes.NEOVM {
-		invokCode = append([]byte{0x67}, invokCode[:]...)
-	}
-	return newInvokeTransaction(gasPrice, gasLimit, vmType, invokCode), nil
+	return newInvokeTransaction(gasPrice, gasLimit, invokCode), nil
 }
 
-func newInvokeTransaction(gasPirce, gasLimit uint64, vmType vmtypes.VmType, code []byte) *types.Transaction {
+func newInvokeTransaction(gasPirce, gasLimit uint64, code []byte) *types.Transaction {
 	invokePayload := &payload.InvokeCode{
-		Code: vmtypes.VmCode{
-			VmType: vmType,
-			Code:   code,
-		},
+		Code: code,
 	}
-	tx := &types.Transaction{
+	tx := &types.MutableTransaction{
 		Version:  0,
 		GasPrice: gasPirce,
 		GasLimit: gasLimit,
 		TxType:   types.Invoke,
 		Nonce:    uint32(time.Now().Unix()),
 		Payload:  invokePayload,
-		Sigs:     make([]*types.Sig, 0, 0),
+		Sigs:     make([]types.Sig, 0, 0),
 	}
-	return tx
+	res, err := tx.IntoImmutable()
+	if err != nil {
+		return nil
+	}
+	return res
 }
