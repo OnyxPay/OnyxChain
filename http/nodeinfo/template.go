@@ -98,7 +98,7 @@ const TEMPLATE_PAGE = `
 
 <table class="font" border="0" width="80%">
 	<tr>
-	<td width="26%" align="center"><a href="https://onx.io" class="site">site : https://onx.io</a></td>
+	<td width="26%" align="center"><a href="https://onyxpay.co" class="site">site : https://onyxpay.co</a></td>
 	</tr>
 </table>
 <br><br><br><br>
