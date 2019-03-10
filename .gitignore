@@ -14,11 +14,11 @@ GoOnchain.iml
 *.orig
 *.rej
 vendor/*
-!vendor/github.com/ontio/ontology-crypto/*
+!vendor/github.com/OnyxPay/OnyxChain-crypto/*
 Chain/*
 /config/*
 nodectl
-ontology
+OnyxChain
 wallet.dat
 cscope*
 *.exe
