@@ -122,12 +122,74 @@ func GetNetworkName(id uint32) string {
 	return fmt.Sprintf("%d", id)
 }
 
-var PolarisConfig = &GenesisConfig{
-	SeedList:      []string{},
+var TestNetConfig = &GenesisConfig{
+	SeedList: []string{
+		"3.8.216.20:20338",
+		"3.8.114.163:20338",
+		"35.178.250.219:20338",
+		"3.8.141.32:20338",
+		"35.178.63.10:20338"},
 	ConsensusType: CONSENSUS_TYPE_VBFT,
-	VBFT:          &VBFTConfig{},
-	DBFT:          &DBFTConfig{},
-	SOLO:          &SOLOConfig{},
+	VBFT: &VBFTConfig{
+		N:                    7,
+		C:                    2,
+		K:                    7,
+		L:                    112,
+		BlockMsgDelay:        10000,
+		HashMsgDelay:         10000,
+		PeerHandshakeTimeout: 10,
+		MaxBlockChangeView:   3000,
+		AdminOnxID:           "did:onx:AaqCTX9JBCcaFzSSY3wBTFHgjnD39kjKdE",
+		MinInitStake:         10000000000000,
+		VrfValue:             "1c9810aa9822e511d5804a9c4db9dd08497c31087b0daafa34d768a3253441fa20515e2f30f81741102af0ca3cefc4818fef16adb825fbaa8cad78647f3afb590e",
+		VrfProof:             "c57741f934042cb8d8b087b44b161db56fc3ffd4ffb675d36cd09f83935be853d8729f3f5298d12d6fd28d45dde515a4b9d7f67682d182ba5118abf451ff1988",
+		Peers: []*VBFTPeerStakeInfo{
+			{
+				Index:      1,
+				PeerPubkey: "02e17137be61d0497ca9c7f6dfc63023d36a82c45f2e01990b853801f56b859a89",
+				Address:    "ANdgnhAsrdfkHJGCBbR7Fsfv2VH4qrQAqr",
+				InitPos:    10000,
+			},
+			{
+				Index:      2,
+				PeerPubkey: "03306a51e3038f47cd8ae3de6dd05e015abd52a5b3731f461f4e6f08e84580d5bc",
+				Address:    "Af35ofPFXopLHEkkeSqsKtKk6h8u6usjaX",
+				InitPos:    20000,
+			},
+			{
+				Index:      3,
+				PeerPubkey: "03c27db2cddb2868aa9cc1357e360082e8a806b0b714322a7e73935305566938ca",
+				Address:    "AX3gRr6zRpsvutiphZNo5WMv8BTWCZ72RM",
+				InitPos:    30000,
+			},
+			{
+				Index:      4,
+				PeerPubkey: "03a25aaecaea8d8a75b2d9f15ebcf5fc34c1ad8f6a6de96e59a4fe04d9a73e0088",
+				Address:    "AY64Ni7zWLaND6whYNv2EvFkAjdWsQZM5h",
+				InitPos:    40000,
+			},
+			{
+				Index:      5,
+				PeerPubkey: "0213825fb06c8eab999934c989e5411aad376608e1f020ffbe2c88befec2d77b95",
+				Address:    "AYEbLFtPkPstRTogTtAuM3oFYXEZ7uSDSt",
+				InitPos:    30000,
+			},
+			{
+				Index:      6,
+				PeerPubkey: "02f1ff6a31f0be1dc41c602d3b39a86735d8fcb287a20f86b50c04f34a013d4317",
+				Address:    "AQhYB8wQ8oWmKNjycEhdm3xoC9wVAX2V6u",
+				InitPos:    20000,
+			},
+			{
+				Index:      7,
+				PeerPubkey: "027730e7d488923d7802cfdb8abedeb650a6c9b981dfd7a9f2d41d05c61bdbe267",
+				Address:    "AXmPNMMKd4Tk9sFwHfSzpBbFkf4VtqdGur",
+				InitPos:    10000,
+			},
+		},
+	},
+	DBFT: &DBFTConfig{},
+	SOLO: &SOLOConfig{},
 }
 
 var MainNetConfig = &GenesisConfig{
@@ -581,7 +643,7 @@ func (this *OnyxChainConfig) GetDefaultNetworkId() (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	polaridId, err := this.getDefNetworkIDFromGenesisConfig(PolarisConfig)
+	polaridId, err := this.getDefNetworkIDFromGenesisConfig(TestNetConfig)
 	if err != nil {
 		return 0, err
 	}

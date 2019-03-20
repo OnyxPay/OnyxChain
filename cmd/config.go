@@ -20,6 +20,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/OnyxPay/OnyxChain/cmd/utils"
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/common/config"
@@ -70,7 +71,7 @@ func setGenesis(ctx *cli.Context, cfg *config.OnyxChainConfig) error {
 	case config.NETWORK_ID_MAIN_NET:
 		cfg.Genesis = config.MainNetConfig
 	case config.NETWORK_ID_POLARIS_NET:
-		cfg.Genesis = config.PolarisConfig
+		cfg.Genesis = config.TestNetConfig
 	}
 
 	if ctx.Bool(utils.GetFlagName(utils.EnableTestModeFlag)) {
