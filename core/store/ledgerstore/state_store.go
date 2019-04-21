@@ -33,7 +33,6 @@ import (
 	scom "github.com/OnyxPay/OnyxChain/core/store/common"
 	"github.com/OnyxPay/OnyxChain/core/store/leveldbstore"
 	"github.com/OnyxPay/OnyxChain/core/store/overlaydb"
-	"github.com/OnyxPay/OnyxChain/core/store/statestore"
 	"github.com/OnyxPay/OnyxChain/merkle"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onxid"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
@@ -230,11 +229,6 @@ func (self *StateStore) AddBlockMerkleTreeRoot(txRoot common.Uint256) error {
 //GetMerkleProof return merkle proof of block
 func (self *StateStore) GetMerkleProof(proofHeight, rootHeight uint32) ([]common.Uint256, error) {
 	return self.merkleTree.InclusionProof(proofHeight, rootHeight+1)
-}
-
-//NewStateBatch return state commit bathe. Usually using in smart contract execution
-func (self *StateStore) NewStateBatch() *statestore.StateBatch {
-	return statestore.NewStateStoreBatch(statestore.NewMemDatabase(), self.store)
 }
 
 func (self *StateStore) NewOverlayDB() *overlaydb.OverlayDB {

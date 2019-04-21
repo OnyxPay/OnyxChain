@@ -42,7 +42,6 @@ import (
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/neovm"
 	"github.com/OnyxPay/OnyxChain/smartcontract/storage"
-	ntypes "github.com/OnyxPay/OnyxChain/vm/neovm/types"
 )
 
 //HandleDeployTransaction deal with smart contract deploy transaction
@@ -353,7 +352,7 @@ func getBalanceFromNative(config *smartcontract.Config, cache *storage.CacheDB, 
 	if err != nil {
 		return 0, err
 	}
-	return ntypes.BigIntFromBytes(result.([]byte)).Uint64(), nil
+	return common.BigIntFromNeoBytes(result.([]byte)).Uint64(), nil
 }
 
 func costInvalidGas(address common.Address, gas uint64, config *smartcontract.Config, overlay *overlaydb.OverlayDB,

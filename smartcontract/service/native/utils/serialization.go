@@ -24,12 +24,10 @@ import (
 	"math/big"
 
 	"github.com/OnyxPay/OnyxChain/common"
-	"github.com/OnyxPay/OnyxChain/common/serialization"
-	"github.com/OnyxPay/OnyxChain/vm/neovm/types"
-)
+	"github.com/OnyxPay/OnyxChain/common/serialization")
 
 func WriteVarUint(w io.Writer, value uint64) error {
-	if err := serialization.WriteVarBytes(w, types.BigIntToBytes(big.NewInt(int64(value)))); err != nil {
+	if err := serialization.WriteVarBytes(w, common.BigIntToNeoBytes(big.NewInt(int64(value)))); err != nil {
 		return fmt.Errorf("serialize value error:%v", err)
 	}
 	return nil
@@ -40,7 +38,7 @@ func ReadVarUint(r io.Reader) (uint64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("deserialize value error:%v", err)
 	}
-	v := types.BigIntFromBytes(value)
+	v := common.BigIntFromNeoBytes(value)
 	if v.Cmp(big.NewInt(0)) < 0 {
 		return 0, fmt.Errorf("%s", "value should not be a negative number.")
 	}
@@ -67,7 +65,7 @@ func EncodeAddress(sink *common.ZeroCopySink, addr common.Address) (size uint64)
 }
 
 func EncodeVarUint(sink *common.ZeroCopySink, value uint64) (size uint64) {
-	return sink.WriteVarBytes(types.BigIntToBytes(big.NewInt(int64(value))))
+	return sink.WriteVarBytes(common.BigIntToNeoBytes(big.NewInt(int64(value))))
 }
 
 func DecodeVarUint(source *common.ZeroCopySource) (uint64, error) {
@@ -78,7 +76,7 @@ func DecodeVarUint(source *common.ZeroCopySource) (uint64, error) {
 	if irregular {
 		return 0, common.ErrIrregularData
 	}
-	v := types.BigIntFromBytes(value)
+	v := common.BigIntFromNeoBytes(value)
 	if v.Cmp(big.NewInt(0)) < 0 {
 		return 0, fmt.Errorf("%s", "value should not be a negative number.")
 	}

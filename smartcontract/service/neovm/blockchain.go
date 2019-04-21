@@ -22,9 +22,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/core/types"
 	"github.com/OnyxPay/OnyxChain/errors"
-	vm "github.com/OnyxPay/OnyxChain/vm/neovm"
-	vmtypes "github.com/OnyxPay/OnyxChain/vm/neovm/types"
-)
+	vm "github.com/OnyxPay/OnyxChain/vm/neovm")
 
 // BlockChainGetHeight put blockchain's height to vm stack
 func BlockChainGetHeight(service *NeoVmService, engine *vm.ExecutionEngine) error {
@@ -45,7 +43,7 @@ func BlockChainGetHeader(service *NeoVmService, engine *vm.ExecutionEngine) erro
 
 	l := len(data)
 	if l <= 5 {
-		b := vmtypes.BigIntFromBytes(data)
+		b := common.BigIntFromNeoBytes(data)
 		height := uint32(b.Int64())
 		hash := service.Store.GetBlockHash(height)
 		header, err = service.Store.GetHeaderByHash(hash)
@@ -78,7 +76,7 @@ func BlockChainGetBlock(service *NeoVmService, engine *vm.ExecutionEngine) error
 	var block *types.Block
 	l := len(data)
 	if l <= 5 {
-		b := vmtypes.BigIntFromBytes(data)
+		b := common.BigIntFromNeoBytes(data)
 		height := uint32(b.Int64())
 		var err error
 		block, err = service.Store.GetBlockByHeight(height)

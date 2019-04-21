@@ -104,7 +104,7 @@ var (
 	//P2P setting
 	ReservedPeersOnlyFlag = cli.BoolFlag{
 		Name:  "reserved-only",
-		Usage: "Connect reserved peers `<address>` only",
+		Usage: "Connect reserved peers only. Reserved peers are configured with --reserved-file.",
 	}
 	ReservedPeersFileFlag = cli.StringFlag{
 		Name:  "reserved-file",
@@ -129,6 +129,11 @@ var (
 		Name:  "consensus-port",
 		Usage: "Consensus network port `<number>`. Effectively after set --dual-port parameter",
 		Value: config.DEFAULT_CONSENSUS_PORT,
+	}
+	HttpInfoPortFlag = cli.UintFlag{
+		Name:  "httpinfo-port",
+		Usage: "The listening port of http server for viewing node information `<number>`",
+		Value: config.DEFAULT_HTTP_INFO_PORT,
 	}
 	MaxConnInBoundFlag = cli.UintFlag{
 		Name:  "max-conn-in-bound",

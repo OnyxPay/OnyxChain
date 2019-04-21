@@ -75,6 +75,7 @@ const (
 	ADD_INIT_POS                     = "addInitPos"
 	REDUCE_INIT_POS                  = "reduceInitPos"
 	SET_PROMISE_POS                  = "setPromisePos"
+	SET_GAS_ADDRESS                  = "setGasAddress"
 
 	//key prefix
 	GLOBAL_PARAM      = "globalParam"
@@ -93,6 +94,7 @@ const (
 	SPLIT_FEE_ADDRESS = "splitFeeAddress"
 	PROMISE_POS       = "promisePos"
 	PRE_CONFIG        = "preConfig"
+	GAS_ADDRESS       = "gasAddress"
 
 	//global
 	PRECISE           = 1000000
@@ -148,6 +150,7 @@ func RegisterGovernanceContract(native *native.NativeService) {
 	native.Register(UPDATE_SPLIT_CURVE, UpdateSplitCurve)
 	native.Register(TRANSFER_PENALTY, TransferPenalty)
 	native.Register(SET_PROMISE_POS, SetPromisePos)
+	native.Register(SET_GAS_ADDRESS, SetGasAddress)
 }
 
 //Init governance contract, include vbft config, global param and onxid admin.
@@ -837,6 +840,9 @@ func UnAuthorizeForPeer(native *native.NativeService) ([]byte, error) {
 		}
 
 		//check pos
+		if pos < 1 {
+			return utils.BYTE_FALSE, fmt.Errorf("unAuthorizeForPeer, pos must >= 1")
+		}
 		if authorizeInfo.ConsensusPos+authorizeInfo.CandidatePos+authorizeInfo.NewPos < uint64(globalParam2.MinAuthorizePos) {
 			pos = authorizeInfo.ConsensusPos + authorizeInfo.CandidatePos + authorizeInfo.NewPos
 		} else if pos < uint64(globalParam2.MinAuthorizePos) || pos%uint64(globalParam2.MinAuthorizePos) != 0 {
@@ -920,6 +926,10 @@ func Withdraw(native *native.NativeService) ([]byte, error) {
 	for i := 0; i < len(params.PeerPubkeyList); i++ {
 		peerPubkey := params.PeerPubkeyList[i]
 		pos := params.WithdrawList[i]
+
+		if pos < 1 {
+			return utils.BYTE_FALSE, fmt.Errorf("withdraw, amount of withdraw must >= 1")
+		}
 		peerPubkeyPrefix, err := hex.DecodeString(peerPubkey)
 		if err != nil {
 			return utils.BYTE_FALSE, fmt.Errorf("hex.DecodeString, peerPubkey format error: %v", err)
@@ -1072,6 +1082,9 @@ func UpdateConfig(native *native.NativeService) ([]byte, error) {
 	if configuration.PeerHandshakeTimeout < 10 {
 		return utils.BYTE_FALSE, fmt.Errorf("updateConfig. PeerHandshakeTimeout must >= 10")
 	}
+	if configuration.MaxBlockChangeView < 10000 {
+		return utils.BYTE_FALSE, fmt.Errorf("updateConfig. MaxBlockChangeView must >= 10000")
+	}
 
 	preConfig := &PreConfig{
 		Configuration: configuration,
@@ -1131,6 +1144,9 @@ func UpdateGlobalParam(native *native.NativeService) ([]byte, error) {
 	if globalParam.CandidateFee != 0 && globalParam.CandidateFee < MIN_CANDIDATE_FEE {
 		return utils.BYTE_FALSE, fmt.Errorf("updateGlobalParam. CandidateFee must >= %d", MIN_CANDIDATE_FEE)
 	}
+	if globalParam.MinInitStake < 1 {
+		return utils.BYTE_FALSE, fmt.Errorf("updateGlobalParam. MinInitStake must >= 1")
+	}
 	err = putGlobalParam(native, contract, globalParam)
 	if err != nil {
 		return utils.BYTE_FALSE, fmt.Errorf("putGlobalParam, put globalParam error: %v", err)
@@ -1163,10 +1179,6 @@ func UpdateGlobalParam2(native *native.NativeService) ([]byte, error) {
 		return utils.BYTE_FALSE, fmt.Errorf("deserialize, deserialize globalParam2 error: %v", err)
 	}
 
-	//check the globalParam
-	if globalParam2.MinAuthorizePos == 0 {
-		return utils.BYTE_FALSE, fmt.Errorf("globalParam2.MinAuthorizePos can not be 0")
-	}
 	// get config
 	config, err := getConfig(native, contract)
 	if err != nil {
@@ -1466,6 +1478,11 @@ func AddInitPos(native *native.NativeService) ([]byte, error) {
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
 
+	//check pos
+	if params.Pos < 1 {
+		return utils.BYTE_FALSE, fmt.Errorf("addInitPos, pos must >= 1")
+	}
+
 	//check if is peer owner
 	//get current view
 	view, err := GetView(native, contract)
@@ -1526,6 +1543,11 @@ func ReduceInitPos(native *native.NativeService) ([]byte, error) {
 		return utils.BYTE_FALSE, fmt.Errorf("validateOwner, checkWitness error: %v", err)
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
+
+	//check pos
+	if params.Pos < 1 {
+		return utils.BYTE_FALSE, fmt.Errorf("reduceInitPos, pos must >= 1")
+	}
 
 	//check if is peer owner
 	//get current view
@@ -1623,6 +1645,34 @@ func SetPromisePos(native *native.NativeService) ([]byte, error) {
 	err = putPromisePos(native, contract, promisePos)
 	if err != nil {
 		return utils.BYTE_FALSE, fmt.Errorf("putPromisePos, put promisePos error: %v", err)
+	}
+
+	return utils.BYTE_TRUE, nil
+}
+
+//set gas address to receive 50% of gas fee
+func SetGasAddress(native *native.NativeService) ([]byte, error) {
+	// get operator from database
+	operatorAddress, err := global_params.GetStorageRole(native,
+		global_params.GenerateOperatorKey(utils.ParamContractAddress))
+	if err != nil {
+		return utils.BYTE_FALSE, fmt.Errorf("SetGasAddress, get operator error: %v", err)
+	}
+
+	//check witness
+	err = utils.ValidateOwner(native, operatorAddress)
+	if err != nil {
+		return utils.BYTE_FALSE, fmt.Errorf("SetGasAddress, checkWitness error: %v", err)
+	}
+	contract := native.ContextRef.CurrentContext().ContractAddress
+
+	param := new(GasAddress)
+	if err := param.Deserialization(common.NewZeroCopySource(native.Input)); err != nil {
+		return utils.BYTE_FALSE, fmt.Errorf("deserialize, contract params deserialize error: %v", err)
+	}
+	err = putGasAddress(native, contract, param)
+	if err != nil {
+		return utils.BYTE_FALSE, fmt.Errorf("put gasAddress error: %v", err)
 	}
 
 	return utils.BYTE_TRUE, nil

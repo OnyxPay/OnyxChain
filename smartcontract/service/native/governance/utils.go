@@ -32,9 +32,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/auth"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
-	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
-	"github.com/OnyxPay/OnyxChain/vm/neovm/types"
-)
+	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils")
 
 func GetPeerPoolMap(native *native.NativeService, contract common.Address, view uint32) (*PeerPoolMap, error) {
 	peerPoolMap := &PeerPoolMap{
@@ -193,7 +191,7 @@ func getOxgBalance(native *native.NativeService, address common.Address) (uint64
 	if err != nil {
 		return 0, fmt.Errorf("getOxgBalance, appCall error: %v", err)
 	}
-	balance := types.BigIntFromBytes(value.([]byte)).Uint64()
+	balance := common.BigIntFromNeoBytes(value.([]byte)).Uint64()
 	return balance, nil
 }
 
@@ -205,13 +203,14 @@ func splitCurve(native *native.NativeService, contract common.Address, pos uint6
 	index := xi / (PRECISE / 10)
 	if index > uint64(len(Xi)-2) {
 		index = uint64(len(Xi) - 2)
+		xi = uint64(Xi[len(Xi)-1])
 	}
 	splitCurve, err := getSplitCurve(native, contract)
 	if err != nil {
 		return 0, fmt.Errorf("getSplitCurve, get splitCurve error: %v", err)
 	}
 	Yi := splitCurve.Yi
-	s := ((uint64(Yi[index+1])-uint64(Yi[index]))*xi + uint64(Yi[index])*uint64(Xi[index+1]) - uint64(Yi[index+1])*uint64(Xi[index])) / (uint64(Xi[index+1]) - uint64(Xi[index]))
+	s := (uint64(Yi[index+1])*xi + uint64(Yi[index])*uint64(Xi[index+1]) - uint64(Yi[index])*xi - uint64(Yi[index+1])*uint64(Xi[index])) / (uint64(Xi[index+1]) - uint64(Xi[index]))
 	return s, nil
 }
 
@@ -421,7 +420,7 @@ func getPreConfig(native *native.NativeService, contract common.Address) (*PreCo
 	preConfig := new(PreConfig)
 	preConfigBytes, err := native.CacheDB.Get(utils.ConcatKey(contract, []byte(PRE_CONFIG)))
 	if err != nil {
-		return nil, fmt.Errorf("native.CloneCache.Get, get preConfigBytes error: %v", err)
+		return nil, fmt.Errorf("native.CacheDB.Get, get preConfigBytes error: %v", err)
 	}
 	if preConfigBytes != nil {
 		preConfigStore, err := cstates.GetValueFromRawStorageItem(preConfigBytes)
@@ -476,7 +475,7 @@ func putCandidateIndex(native *native.NativeService, contract common.Address, ca
 func getSplitFee(native *native.NativeService, contract common.Address) (uint64, error) {
 	splitFeeBytes, err := native.CacheDB.Get(utils.ConcatKey(contract, []byte(SPLIT_FEE)))
 	if err != nil {
-		return 0, fmt.Errorf("native.CloneCache.Get, get splitFeeBytes error: %v", err)
+		return 0, fmt.Errorf("native.CacheDB.Get, get splitFeeBytes error: %v", err)
 	}
 	var splitFee uint64 = 0
 	if splitFeeBytes != nil {
@@ -504,7 +503,7 @@ func putSplitFee(native *native.NativeService, contract common.Address, splitFee
 func getSplitFeeAddress(native *native.NativeService, contract common.Address, address common.Address) (*SplitFeeAddress, error) {
 	splitFeeAddressBytes, err := native.CacheDB.Get(utils.ConcatKey(contract, []byte(SPLIT_FEE_ADDRESS), address[:]))
 	if err != nil {
-		return nil, fmt.Errorf("native.CloneCache.Get, get splitFeeAddressBytes error: %v", err)
+		return nil, fmt.Errorf("native.CacheDB.Get, get splitFeeAddressBytes error: %v", err)
 	}
 	splitFeeAddress := &SplitFeeAddress{
 		Address: address,
@@ -717,7 +716,7 @@ func getPeerAttributes(native *native.NativeService, contract common.Address, pe
 	}
 	peerAttributesBytes, err := native.CacheDB.Get(utils.ConcatKey(contract, []byte(PEER_ATTRIBUTES), peerPubkeyPrefix))
 	if err != nil {
-		return nil, fmt.Errorf("getPeerAttributes, native.CloneCache.Get error: %v", err)
+		return nil, fmt.Errorf("getPeerAttributes, native.CacheDB.Get error: %v", err)
 	}
 	peerAttributes := &PeerAttributes{
 		PeerPubkey:   peerPubkey,
@@ -792,5 +791,31 @@ func putPromisePos(native *native.NativeService, contract common.Address, promis
 	}
 	native.CacheDB.Put(utils.ConcatKey(contract, []byte(PROMISE_POS), peerPubkeyPrefix),
 		cstates.GenRawStorageItem(bf.Bytes()))
+	return nil
+}
+
+func getGasAddress(native *native.NativeService, contract common.Address) (*GasAddress, error) {
+	gasAddressBytes, err := native.CacheDB.Get(utils.ConcatKey(contract, []byte(GAS_ADDRESS)))
+	if err != nil {
+		return nil, fmt.Errorf("get gasAddressBytes error: %v", err)
+	}
+	gasAddress := new(GasAddress)
+	if gasAddressBytes != nil {
+		gasAddressStore, err := cstates.GetValueFromRawStorageItem(gasAddressBytes)
+		if err != nil {
+			return nil, fmt.Errorf("get value from gasAddressBytes err:%v", err)
+		}
+		if err := gasAddress.Deserialization(common.NewZeroCopySource(gasAddressStore)); err != nil {
+			return nil, fmt.Errorf("deserialize, deserialize gasAddress error: %v", err)
+		}
+	}
+	return gasAddress, nil
+}
+
+func putGasAddress(native *native.NativeService, contract common.Address, gasAddress *GasAddress) error {
+	sink := common.NewZeroCopySink(nil)
+	gasAddress.Serialization(sink)
+	native.CacheDB.Put(utils.ConcatKey(contract, []byte(GAS_ADDRESS)),
+		cstates.GenRawStorageItem(sink.Bytes()))
 	return nil
 }

@@ -28,9 +28,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/common/log"
 	"github.com/OnyxPay/OnyxChain/errors"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native"
-	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
-	"github.com/OnyxPay/OnyxChain/vm/neovm/types"
-)
+	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils")
 
 const (
 	TRANSFER_FLAG byte = 1
@@ -176,9 +174,6 @@ func OnxApprove(native *native.NativeService) ([]byte, error) {
 	if err := state.Deserialization(source); err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OxgApprove] state deserialize error!")
 	}
-	if state.Value == 0 {
-		return utils.BYTE_FALSE, nil
-	}
 	if state.Value > constants.ONX_TOTAL_SUPPLY {
 		return utils.BYTE_FALSE, fmt.Errorf("approve onx amount:%d over totalSupply:%d", state.Value, constants.ONX_TOTAL_SUPPLY)
 	}
@@ -195,7 +190,7 @@ func OnxName(native *native.NativeService) ([]byte, error) {
 }
 
 func OnxDecimals(native *native.NativeService) ([]byte, error) {
-	return types.BigIntToBytes(big.NewInt(int64(constants.ONX_DECIMALS))), nil
+	return types.BigIntToNeoBytes(big.NewInt(int64(constants.ONX_DECIMALS))), nil
 }
 
 func OnxSymbol(native *native.NativeService) ([]byte, error) {
@@ -208,7 +203,7 @@ func OnxTotalSupply(native *native.NativeService) ([]byte, error) {
 	if err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnxTotalSupply] get totalSupply error!")
 	}
-	return types.BigIntToBytes(big.NewInt(int64(amount))), nil
+	return common.BigIntToNeoBytes(big.NewInt(int64(amount))), nil
 }
 
 func OnxBalanceOf(native *native.NativeService) ([]byte, error) {
@@ -240,7 +235,7 @@ func GetBalanceValue(native *native.NativeService, flag byte) ([]byte, error) {
 	if err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[GetBalanceValue] address parse error!")
 	}
-	return types.BigIntToBytes(big.NewInt(int64(amount))), nil
+	return common.BigIntToNeoBytes(big.NewInt(int64(amount))), nil
 }
 
 func grantOxg(native *native.NativeService, contract, address common.Address, balance uint64) error {

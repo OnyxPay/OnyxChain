@@ -26,11 +26,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/OnyxPay/OnyxChain/common/log"
-	"github.com/OnyxPay/OnyxChain/p2pserver/common"
+	comm "github.com/OnyxPay/OnyxChain/common
+	"github.com/OnyxPay/OnyxChain/common/log"	"github.com/OnyxPay/OnyxChain/p2pserver/common"
+
 	conn "github.com/OnyxPay/OnyxChain/p2pserver/link"
-	"github.com/OnyxPay/OnyxChain/p2pserver/message/types"
-)
+	"github.com/OnyxPay/OnyxChain/p2pserver/message/types")
 
 // PeerCom provides the basic information of a peer
 type PeerCom struct {
@@ -42,6 +42,7 @@ type PeerCom struct {
 	syncPort     uint16
 	consPort     uint16
 	height       uint64
+	softVersion  string
 }
 
 // SetID sets a peer's id
@@ -124,6 +125,16 @@ func (this *PeerCom) GetHeight() uint64 {
 	return this.height
 }
 
+//SetSoftVersion sets a peers's software version
+func (this *PeerCom) SetSoftVersion(softVer string) {
+	this.softVersion = softVer
+}
+
+//GetSoftVersion return a peer's software version
+func (this *PeerCom) GetSoftVersion() string {
+	return this.softVersion
+}
+
 //Peer represent the node in p2p
 type Peer struct {
 	base      PeerCom
@@ -168,6 +179,7 @@ func (this *Peer) DumpInfo() {
 	log.Debug("[p2p]\t consPort = ", this.GetConsPort())
 	log.Debug("[p2p]\t relay = ", this.GetRelay())
 	log.Debug("[p2p]\t height = ", this.GetHeight())
+	log.Debug("[p2p]\t softVersion = ", this.GetSoftVersion())
 }
 
 //GetVersion return peer`s version
@@ -231,17 +243,17 @@ func (this *Peer) SetConsPort(port uint16) {
 }
 
 //SendToSync call sync link to send buffer
-func (this *Peer) SendToSync(msg types.Message) error {
+func (this *Peer) SendToSync(msgType string, msgPayload []byte) error {
 	if this.SyncLink != nil && this.SyncLink.Valid() {
-		return this.SyncLink.Tx(msg)
+		return this.SyncLink.SendRaw(msgPayload)
 	}
 	return errors.New("[p2p]sync link invalid")
 }
 
 //SendToCons call consensus link to send buffer
-func (this *Peer) SendToCons(msg types.Message) error {
+func (this *Peer) SendToCons(msgType string, msgPayload []byte) error {
 	if this.ConsLink != nil && this.ConsLink.Valid() {
-		return this.ConsLink.Tx(msg)
+		return this.ConsLink.SendRaw(msgPayload)
 	}
 	return errors.New("[p2p]cons link invalid")
 }
@@ -316,6 +328,10 @@ func (this *Peer) GetAddr16() ([16]byte, error) {
 	return result, nil
 }
 
+func (this *Peer) GetSoftVersion() string {
+	return this.base.GetSoftVersion()
+}
+
 //AttachSyncChan set msg chan to sync link
 func (this *Peer) AttachSyncChan(msgchan chan *types.MsgPayload) {
 	this.SyncLink.SetChan(msgchan)
@@ -328,10 +344,21 @@ func (this *Peer) AttachConsChan(msgchan chan *types.MsgPayload) {
 
 //Send transfer buffer by sync or cons link
 func (this *Peer) Send(msg types.Message, isConsensus bool) error {
-	if isConsensus && this.ConsLink.Valid() {
-		return this.SendToCons(msg)
+	sink := comm.NewZeroCopySink(nil)
+	err := types.WriteMessage(sink, msg)
+	if err != nil {
+		log.Debugf("[p2p]error serialize messge ", err.Error())
+		return err
 	}
-	return this.SendToSync(msg)
+
+	return this.SendRaw(msg.CmdType(), sink.Bytes(), isConsensus)
+}
+
+func (this *Peer) SendRaw(msgType string, msgPayload []byte, isConsensus bool) error {
+	if isConsensus && this.ConsLink.Valid() {
+		return this.SendToCons(msgType, msgPayload)
+	}
+	return this.SendToSync(msgType, msgPayload)
 }
 
 //SetHttpInfoState set peer`s httpinfo state
@@ -360,7 +387,7 @@ func (this *Peer) SetHttpInfoPort(port uint16) {
 
 //UpdateInfo update peer`s information
 func (this *Peer) UpdateInfo(t time.Time, version uint32, services uint64,
-	syncPort uint16, consPort uint16, nonce uint64, relay uint8, height uint64) {
+	syncPort uint16, consPort uint16, nonce uint64, relay uint8, height uint64, softVer string) {
 
 	this.SyncLink.UpdateRXTime(t)
 	this.base.SetID(nonce)
@@ -368,6 +395,7 @@ func (this *Peer) UpdateInfo(t time.Time, version uint32, services uint64,
 	this.base.SetServices(services)
 	this.base.SetSyncPort(syncPort)
 	this.base.SetConsPort(consPort)
+	this.base.SetSoftVersion(softVer)
 	this.SyncLink.SetPort(syncPort)
 	this.ConsLink.SetPort(consPort)
 	if relay == 0 {

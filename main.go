@@ -28,6 +28,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/OnyxPay/OnyxChain-crypto/keypair"
 	"github.com/OnyxPay/OnyxChain-eventbus/actor"
 	alog "github.com/OnyxPay/OnyxChain-eventbus/log"
@@ -106,6 +107,7 @@ func setupAPP() *cli.App {
 		utils.NodePortFlag,
 		utils.ConsensusPortFlag,
 		utils.DualPortSupportFlag,
+		utils.HttpInfoPortFlag,
 		utils.MaxConnInBoundFlag,
 		utils.MaxConnOutBoundFlag,
 		utils.MaxConnInBoundForSingleIPFlag,
@@ -143,6 +145,8 @@ func startOnyxChain(ctx *cli.Context) {
 	initLog(ctx)
 
 	log.Infof("onyxchain version %s", config.Version)
+
+	setMaxOpenFiles()
 
 	cfg, err := initConfig(ctx)
 	if err != nil {
@@ -419,6 +423,19 @@ func logCurrBlockHeight() {
 				log.InitLog(int(config.DefConfig.Common.LogLevel), log.PATH, log.Stdout)
 			}
 		}
+	}
+}
+
+func setMaxOpenFiles() {
+	max, err := fdlimit.Maximum()
+	if err != nil {
+		log.Errorf("failed to get maximum open files:%v", err)
+		return
+	}
+	_, err = fdlimit.Raise(uint64(max))
+	if err != nil {
+		log.Errorf("failed to set maximum open files:%v", err)
+		return
 	}
 }
 
