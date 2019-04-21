@@ -190,7 +190,7 @@ func OnxName(native *native.NativeService) ([]byte, error) {
 }
 
 func OnxDecimals(native *native.NativeService) ([]byte, error) {
-	return types.BigIntToNeoBytes(big.NewInt(int64(constants.ONX_DECIMALS))), nil
+	return common.BigIntToNeoBytes(big.NewInt(int64(constants.ONX_DECIMALS))), nil
 }
 
 func OnxSymbol(native *native.NativeService) ([]byte, error) {
