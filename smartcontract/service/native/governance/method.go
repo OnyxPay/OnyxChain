@@ -858,9 +858,9 @@ func executeSplit2(native *native.NativeService, contract common.Address, view u
 	if gasAddress.Address == common.ADDRESS_EMPTY {
 		dappIncome = new(big.Int).SetUint64(0)
 	} else {
-		err := appCallTransferOng(native, utils.GovernanceContractAddress, gasAddress.Address, dappIncome.Uint64())
+		err := appCallTransferOxg(native, utils.GovernanceContractAddress, gasAddress.Address, dappIncome.Uint64())
 		if err != nil {
-			return splitSum, fmt.Errorf("appCallTransferOng, appCallTransferOng error: %v", err)
+			return splitSum, fmt.Errorf("appCallTransferOxg, appCallTransferOxg error: %v", err)
 		}
 	}
 

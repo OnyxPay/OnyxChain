@@ -25,7 +25,8 @@ import (
 	"time"
 
 	common2 "github.com/OnyxPay/OnyxChain/common"
-	"github.com/OnyxPay/OnyxChain/p2pserver/common"	"github.com/stretchr/testify/assert"
+	"github.com/OnyxPay/OnyxChain/p2pserver/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMsgHdrSerializationDeserialization(t *testing.T) {

@@ -22,13 +22,13 @@ import (
 	"math/big"
 
 	"fmt"
+
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/common/constants"
 	"github.com/OnyxPay/OnyxChain/errors"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/onx"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
-	"github.com/OnyxPay/OnyxChain/vm/neovm/types"
 )
 
 func InitOxg() {
@@ -146,7 +146,7 @@ func OxgTotalSupply(native *native.NativeService) ([]byte, error) {
 	if err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OnxTotalSupply] get totalSupply error!")
 	}
-	return types.BigIntToBytes(big.NewInt(int64(amount))), nil
+	return common.BigIntToNeoBytes(big.NewInt(int64(amount))), nil
 }
 
 func OxgBalanceOf(native *native.NativeService) ([]byte, error) {

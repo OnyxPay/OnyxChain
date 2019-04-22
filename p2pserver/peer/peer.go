@@ -26,11 +26,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	comm "github.com/OnyxPay/OnyxChain/common
-	"github.com/OnyxPay/OnyxChain/common/log"	"github.com/OnyxPay/OnyxChain/p2pserver/common"
-
+	comm "github.com/OnyxPay/OnyxChain/common"
+	"github.com/OnyxPay/OnyxChain/common/log"
+	"github.com/OnyxPay/OnyxChain/p2pserver/common"
 	conn "github.com/OnyxPay/OnyxChain/p2pserver/link"
-	"github.com/OnyxPay/OnyxChain/p2pserver/message/types")
+	"github.com/OnyxPay/OnyxChain/p2pserver/message/types"
+)
 
 // PeerCom provides the basic information of a peer
 type PeerCom struct {
