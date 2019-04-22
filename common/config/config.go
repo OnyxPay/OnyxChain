@@ -34,7 +34,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/errors"
 )
 
-var Version = "1.0.0" //Set value when build project
+var Version = "1.6.0" //Set value when build project
 
 const (
 	DEFAULT_CONFIG_FILE_NAME = "./config.json"
