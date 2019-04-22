@@ -124,11 +124,11 @@ func GetNetworkName(id uint32) string {
 
 var TestNetConfig = &GenesisConfig{
 	SeedList: []string{
-		"3.8.216.20:20338",
-		"3.8.114.163:20338",
-		"35.178.250.219:20338",
-		"3.8.141.32:20338",
-		"35.178.63.10:20338"},
+		"cepheus1.onyxpay.co:20338",
+		"cepheus2.onyxpay.co:20338",
+		"cepheus3.onyxpay.co:20338",
+		"cepheus4.onyxpay.co:20338",
+		"cepheus5.onyxpay.co:20338"},
 	ConsensusType: CONSENSUS_TYPE_VBFT,
 	VBFT: &VBFTConfig{
 		N:                    7,
@@ -194,15 +194,15 @@ var TestNetConfig = &GenesisConfig{
 
 var MainNetConfig = &GenesisConfig{
 	SeedList: []string{
-		"35.180.188.239:20338",
-		"35.180.159.121:20338",
-		"35.180.24.38:20338",
-		"35.180.110.87:20338",
-		"52.47.211.79:20338",
-		"35.181.6.169:20338",
-		"35.180.188.46:20338",
-		"35.180.60.22:20338",
-		"35.180.253.34:20338"},
+		"andromeda1.onyxpay.co:20338",
+		"andromeda2.onyxpay.co:20338",
+		"andromeda3.onyxpay.co:20338",
+		"andromeda4.onyxpay.co:20338",
+		"andromeda5.onyxpay.co:20338",
+		"andromeda6.onyxpay.co:20338",
+		"andromeda7.onyxpay.co:20338",
+		"andromeda8.onyxpay.co:20338",
+		"andromeda9.onyxpay.co:20338"},
 	ConsensusType: CONSENSUS_TYPE_VBFT,
 	VBFT: &VBFTConfig{
 		N:                    7,
