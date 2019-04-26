@@ -468,6 +468,8 @@ type RpcConfig struct {
 	EnableHttpJsonRpc bool
 	HttpJsonPort      uint
 	HttpLocalPort     uint
+	HttpCertPath      string
+	HttpKeyPath       string
 }
 
 type RestfulConfig struct {
@@ -532,14 +534,20 @@ func NewOnyxChainConfig() *OnyxChainConfig {
 			EnableHttpJsonRpc: true,
 			HttpJsonPort:      DEFAULT_RPC_PORT,
 			HttpLocalPort:     DEFAULT_RPC_LOCAL_PORT,
+			HttpCertPath:      "cert.pem",
+			HttpKeyPath:       "key.pem",
 		},
 		Restful: &RestfulConfig{
 			EnableHttpRestful: true,
 			HttpRestPort:      DEFAULT_REST_PORT,
+			HttpCertPath:      "cert.pem",
+			HttpKeyPath:       "key.pem",
 		},
 		Ws: &WebSocketConfig{
 			EnableHttpWs: true,
 			HttpWsPort:   DEFAULT_WS_PORT,
+			HttpCertPath: "cert.pem",
+			HttpKeyPath:  "key.pem",
 		},
 	}
 }

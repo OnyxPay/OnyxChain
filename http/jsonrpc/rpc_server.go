@@ -24,8 +24,10 @@ import (
 	"strconv"
 
 	"fmt"
+
 	cfg "github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
+	"github.com/OnyxPay/OnyxChain/http/base/rest"
 	"github.com/OnyxPay/OnyxChain/http/base/rpc"
 )
 
@@ -60,7 +62,15 @@ func StartRPCServer() error {
 	rpc.HandleFunc("getunboundoxg", rpc.GetUnboundOxg)
 	rpc.HandleFunc("getgrantoxg", rpc.GetGrantOxg)
 
-	err := http.ListenAndServe(":"+strconv.Itoa(int(cfg.DefConfig.Rpc.HttpJsonPort)), nil)
+	port := int(cfg.DefConfig.Rpc.HttpJsonPort)
+	var err error
+	if port%1000 == rest.TLS_PORT {
+		certPath := cfg.DefConfig.Rpc.HttpCertPath
+		keyPath := cfg.DefConfig.Rpc.HttpKeyPath
+		err = http.ListenAndServeTLS(":"+strconv.Itoa(port), certPath, keyPath, nil)
+	} else {
+		err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	}
 	if err != nil {
 		return fmt.Errorf("ListenAndServe error:%s", err)
 	}
