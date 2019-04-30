@@ -86,6 +86,8 @@ func setupAPP() *cli.App {
 		utils.LogLevelFlag,
 		utils.DisableEventLogFlag,
 		utils.DataDirFlag,
+		utils.CertFileFlag,
+		utils.KeyFileFlag,
 		//account setting
 		utils.WalletFileFlag,
 		utils.AccountAddressFlag,

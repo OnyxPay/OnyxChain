@@ -23,11 +23,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	cfg "github.com/OnyxPay/OnyxChain/common/config"
-	"github.com/OnyxPay/OnyxChain/common/log"
-	berr "github.com/OnyxPay/OnyxChain/http/base/error"
-	"github.com/OnyxPay/OnyxChain/http/base/rest"
-	"golang.org/x/net/netutil"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -35,6 +30,12 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	cfg "github.com/OnyxPay/OnyxChain/common/config"
+	"github.com/OnyxPay/OnyxChain/common/log"
+	berr "github.com/OnyxPay/OnyxChain/http/base/error"
+	"github.com/OnyxPay/OnyxChain/http/base/rest"
+	"golang.org/x/net/netutil"
 )
 
 type handler func(map[string]interface{}) map[string]interface{}
@@ -97,8 +98,9 @@ func (this *restServer) Start() error {
 		return nil
 	}
 
-	tlsFlag := false
-	if tlsFlag || retPort%1000 == rest.TLS_PORT {
+	certPath := cfg.DefConfig.Restful.HttpCertPath
+	keyPath := cfg.DefConfig.Restful.HttpKeyPath
+	if len(certPath) > 0 && len(keyPath) > 0 {
 		var err error
 		this.listener, err = this.initTlsListen()
 		if err != nil {
