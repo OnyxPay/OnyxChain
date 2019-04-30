@@ -68,6 +68,16 @@ var (
 		Usage: "Block data storage `<path>`",
 		Value: config.DEFAULT_DATA_DIR,
 	}
+	CertFileFlag = cli.StringFlag{
+		Name:  "cert-file",
+		Usage: "Path to a `<file>` with TLS certificate",
+		Value: "",
+	}
+	KeyFileFlag = cli.StringFlag{
+		Name:  "key-file",
+		Usage: "Path to a `<file>` with TLS private key",
+		Value: "",
+	}
 
 	//Consensus setting
 	EnableConsensusFlag = cli.BoolFlag{

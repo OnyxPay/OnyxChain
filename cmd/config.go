@@ -174,17 +174,23 @@ func setRpcConfig(ctx *cli.Context, cfg *config.RpcConfig) {
 	cfg.EnableHttpJsonRpc = !ctx.Bool(utils.GetFlagName(utils.RPCDisabledFlag))
 	cfg.HttpJsonPort = ctx.Uint(utils.GetFlagName(utils.RPCPortFlag))
 	cfg.HttpLocalPort = ctx.Uint(utils.GetFlagName(utils.RPCLocalProtFlag))
+	cfg.HttpCertPath = ctx.String(utils.GetFlagName(utils.CertFileFlag))
+	cfg.HttpKeyPath = ctx.String(utils.GetFlagName(utils.KeyFileFlag))
 }
 
 func setRestfulConfig(ctx *cli.Context, cfg *config.RestfulConfig) {
 	cfg.EnableHttpRestful = ctx.Bool(utils.GetFlagName(utils.RestfulEnableFlag))
 	cfg.HttpRestPort = ctx.Uint(utils.GetFlagName(utils.RestfulPortFlag))
 	cfg.HttpMaxConnections = ctx.Uint(utils.GetFlagName(utils.RestfulMaxConnsFlag))
+	cfg.HttpCertPath = ctx.String(utils.GetFlagName(utils.CertFileFlag))
+	cfg.HttpKeyPath = ctx.String(utils.GetFlagName(utils.KeyFileFlag))
 }
 
 func setWebSocketConfig(ctx *cli.Context, cfg *config.WebSocketConfig) {
 	cfg.EnableHttpWs = ctx.Bool(utils.GetFlagName(utils.WsEnabledFlag))
 	cfg.HttpWsPort = ctx.Uint(utils.GetFlagName(utils.WsPortFlag))
+	cfg.HttpCertPath = ctx.String(utils.GetFlagName(utils.CertFileFlag))
+	cfg.HttpKeyPath = ctx.String(utils.GetFlagName(utils.KeyFileFlag))
 }
 
 func SetRpcPort(ctx *cli.Context) {

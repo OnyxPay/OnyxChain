@@ -29,13 +29,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/OnyxPay/OnyxChain/common"
 	cfg "github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
 	Err "github.com/OnyxPay/OnyxChain/http/base/error"
 	"github.com/OnyxPay/OnyxChain/http/base/rest"
 	"github.com/OnyxPay/OnyxChain/http/websocket/session"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -93,8 +93,9 @@ func (self *WsServer) Start() error {
 		return true
 	}
 
-	tlsFlag := false
-	if tlsFlag || wsPort%1000 == rest.TLS_PORT {
+	certPath := cfg.DefConfig.Ws.HttpCertPath
+	keyPath := cfg.DefConfig.Ws.HttpKeyPath
+	if len(certPath) > 0 && len(keyPath) > 0 {
 		var err error
 		self.listener, err = self.initTlsListen()
 		if err != nil {

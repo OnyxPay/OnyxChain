@@ -27,7 +27,6 @@ import (
 
 	cfg "github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
-	"github.com/OnyxPay/OnyxChain/http/base/rest"
 	"github.com/OnyxPay/OnyxChain/http/base/rpc"
 )
 
@@ -63,10 +62,10 @@ func StartRPCServer() error {
 	rpc.HandleFunc("getgrantoxg", rpc.GetGrantOxg)
 
 	port := int(cfg.DefConfig.Rpc.HttpJsonPort)
+	certPath := cfg.DefConfig.Rpc.HttpCertPath
+	keyPath := cfg.DefConfig.Rpc.HttpKeyPath
 	var err error
-	if port%1000 == rest.TLS_PORT {
-		certPath := cfg.DefConfig.Rpc.HttpCertPath
-		keyPath := cfg.DefConfig.Rpc.HttpKeyPath
+	if len(certPath) > 0 && len(keyPath) > 0 {
 		err = http.ListenAndServeTLS(":"+strconv.Itoa(port), certPath, keyPath, nil)
 	} else {
 		err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
