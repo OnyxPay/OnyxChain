@@ -26,6 +26,6 @@ RUN apk add --no-cache --virtual .build-deps bash gcc musl-dev openssl go && \
     rm -r /opt/OnyxChain/go.tgz
 
 
-CMD /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid 2 --gasprice 500 --rest --ws --cert-file /etc/letsencrypt/live/${domain}/fullchain.pem --key-file /etc/letsencrypt/live/${domain}/privkey.pem
+CMD /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid 2 --gasprice 500 --rest --ws
 
 
