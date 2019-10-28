@@ -51,4 +51,5 @@ RUN chmod +x /opt/checkOnyxChainHealth.sh && \
 
 
 CMD ['crond', '-l 2', '-f']
-CMD /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws
+CMD [ -z "${domain}" ] && /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws \
+|| /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws --cert-file /etc/letsencrypt/live/${domain}/fullchain.pem --key-file /etc/letsencrypt/live/${domain}/privkey.pem
