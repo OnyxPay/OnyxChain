@@ -37,9 +37,9 @@ checkStatus() { \n\
                 reboot \n\
         fi \n\
 } \n\
-checkAPI=\$(curl -sS http://localhost:20334/api/v1/block/height | jq -r '.Desc') \n\
+checkAPI=\$(curl --insecure -sS https://localhost:20334/api/v1/block/height | jq -r '.Desc') \n\
 checkWebsocket=\$(wscat -c \"ws://localhost:20335\" -x '{\"Action\": \"heartbeat\",\"Version\": \"1.0.0\"}' | jq -r '.Desc') \n\
-checkRPC=\$(curl -sS -X POST -H \"Content-type: application/json\"  -H \"Accept: application/json\" -d '{\"jsonrpc\":\"2.0\",\"method\":\"getbestblockhash\",\"params\":[],\"id\":1}'  http://localhost:20336 | jq -r '.desc') \n\
+checkRPC=\$(curl --insecure -sS -X POST -H \"Content-type: application/json\"  -H \"Accept: application/json\" -d '{\"jsonrpc\":\"2.0\",\"method\":\"getbestblockhash\",\"params\":[],\"id\":1}'  https://localhost:20336 | jq -r '.desc') \n\
 "# checkStatus api, websocket, rpc" \n\
 checkStatus \${checkAPI} \n\
 checkStatus \${checkWebsocket} \n\
