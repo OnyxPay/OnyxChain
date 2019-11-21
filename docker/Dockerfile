@@ -34,7 +34,7 @@ checkStatus() { \n\
         if [ \"\${1}\" != \"SUCCESS\" ]; then \n\
                 echo \"syncnode was reboot -- \$(date)\" >> /opt/OnyxChain/Log/checkOnyxChainHealth.log \n\
                 logger -p user.error -t \$(basename \$0) \"syncnode was reboot -- \$(date)\" \n\
-                reboot \n\
+                kill -9 $(ps ax | grep /opt/OnyxChain/OnyxChain  | awk '{print $1}') \n\
         fi \n\
 } \n\
 checkAPI=\$(curl --connect-timeout 10 --insecure -sS https://localhost:20334/api/v1/block/height | jq -r '.Desc') \n\
