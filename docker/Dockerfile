@@ -11,8 +11,10 @@ WORKDIR /opt/OnyxChain
 RUN apk update && apk add git curl jq npm bash && \
     npm install -g wscat
 
+ENV GO111MODULE="on"
+
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev openssl go && \
-    wget -O go.tgz https://dl.google.com/go/go1.10.3.src.tar.gz  && \
+    wget -O go.tgz https://dl.google.com/go/go1.12.src.tar.gz  && \
     tar -C /usr/local -xzf go.tgz && \
     cd /usr/local/go/src/ && \
     ./make.bash && \
