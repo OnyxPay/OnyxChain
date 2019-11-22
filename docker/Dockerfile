@@ -1,3 +1,6 @@
+# cd ./docker
+# docker build -t onyxchain .
+
 FROM alpine:latest
 
 RUN mkdir -p /opt/OnyxChain && \
@@ -30,23 +33,7 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev openssl go && \
 
 
 
-RUN echo -e " \n\
-"#!/bin/bash" \n\
-checkStatus() { \n\
-        if [ \"\${1}\" != \"SUCCESS\" ]; then \n\
-                echo \"syncnode was reboot -- \$(date)\" >> /opt/OnyxChain/Log/checkOnyxChainHealth.log \n\
-                logger -p user.error -t \$(basename \$0) \"syncnode was reboot -- \$(date)\" \n\
-                reboot \n\
-        fi \n\
-} \n\
-checkAPI=\$(curl --connect-timeout 10 --insecure -sS https://localhost:20334/api/v1/block/height | jq -r '.Desc') \n\
-checkWebsocket=\$(wscat -c \"ws://localhost:20335\" -x '{\"Action\": \"heartbeat\",\"Version\": \"1.0.0\"}' | jq -r '.Desc') \n\
-checkRPC=\$(curl --connect-timeout 10 --insecure -sS -X POST -H \"Content-type: application/json\"  -H \"Accept: application/json\" -d '{\"jsonrpc\":\"2.0\",\"method\":\"getbestblockhash\",\"params\":[],\"id\":1}'  https://localhost:20336 | jq -r '.desc') \n\
-"# checkStatus api, websocket, rpc" \n\
-checkStatus \${checkAPI} \n\
-checkStatus \${checkWebsocket} \n\
-checkStatus \${checkRPC} \n\
-" > /opt/checkOnyxChainHealth.sh
+COPY ./checkOnyxChainHealth.sh /opt/checkOnyxChainHealth.sh
 
 RUN chmod +x /opt/checkOnyxChainHealth.sh && \
     echo '* * * * * /opt/checkOnyxChainHealth.sh' >> /etc/crontabs/root
