@@ -1,3 +1,6 @@
+# cd ./docker
+# docker build -t onyxchain .
+
 FROM alpine:latest
 
 RUN mkdir -p /opt/OnyxChain && \
