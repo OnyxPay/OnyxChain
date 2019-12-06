@@ -17,8 +17,8 @@ checkRPC=$(curl --connect-timeout 10 --insecure -sS -X POST -H "Content-type: ap
 checkStatus ${checkAPI}
 checkStatus ${checkRPC}
 # check websocket
-checkWebsocket=$(wscat -n -c "wss://localhost:20335" -x '{"Action": "heartbeat","Version": "1.0.0"}' | jq -r '.Desc')
+checkWebsocket=$(echo '{"Action": "heartbeat","Version": "1.0.0"}' | websocat wss://localhost:20335 | jq -r '.Desc')
 if [ -z "$checkWebsocket" ]; then
-checkWebsocket=$(wscat -n -c "ws://localhost:20335" -x '{"Action": "heartbeat","Version": "1.0.0"}' | jq -r '.Desc')
+checkWebsocket=$(echo '{"Action": "heartbeat","Version": "1.0.0"}' | websocat ws://localhost:20335 | jq -r '.Desc')
 fi
 checkStatus ${checkWebsocket}
