@@ -6,9 +6,9 @@ if grep -q "$checkHttp" <<< "SSL"; then
 fi
 checkStatus() {
         if [ "${1}" != "SUCCESS" ]; then
-                echo "syncnode was reboot -- $(date)" >> /opt/OnyxChain/Log/checkOnyxChainHealth.log
+                echo "syncnode was reboot -- $(date)" >> /var/log/checkhealth/checkOnyxChainHealth.log
                 logger -p user.error -t $(basename $0) "syncnode was reboot -- $(date)"
-                kill -9 $(ps ax | grep OnyxChain | awk '{print $1}')
+                exit 1
         fi
 }
 checkAPI=$(curl --connect-timeout 10 --insecure -sS $hostUrl:20334/api/v1/block/height | jq -r '.Desc')
