@@ -20,6 +20,8 @@ package rest
 
 import (
 	"bytes"
+	"strconv"
+
 	"github.com/OnyxPay/OnyxChain/common"
 	"github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
@@ -30,14 +32,13 @@ import (
 	bcomn "github.com/OnyxPay/OnyxChain/http/base/common"
 	berr "github.com/OnyxPay/OnyxChain/http/base/error"
 	"github.com/OnyxPay/OnyxChain/smartcontract/service/native/utils"
-	"strconv"
 )
 
 const TLS_PORT int = 443
 
 type ApiServer interface {
 	Start() error
-	Stop()
+	Stop() error
 }
 
 // get node verison

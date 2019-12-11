@@ -323,11 +323,13 @@ func (this *restServer) response(w http.ResponseWriter, resp map[string]interfac
 }
 
 //stop restful server
-func (this *restServer) Stop() {
+func (this *restServer) Stop() error {
 	if this.server != nil {
-		this.server.Shutdown(context.Background())
+		err := this.server.Shutdown(context.Background())
 		log.Error("Close restful ")
+		return err
 	}
+	return nil
 }
 
 //restart server

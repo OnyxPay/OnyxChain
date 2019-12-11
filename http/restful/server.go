@@ -24,7 +24,10 @@ import (
 )
 
 //start restful
-func StartServer() {
+func StartServer() func() error {
 	rt := restful.InitRestServer()
 	go rt.Start()
+	return func() error {
+		return rt.Stop()
+	}
 }

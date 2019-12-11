@@ -35,13 +35,14 @@ import (
 
 var ws *websocket.WsServer
 
-func StartServer() {
+func StartServer() func() error {
 	bactor.SubscribeEvent(message.TOPIC_SAVE_BLOCK_COMPLETE, sendBlock2WSclient)
 	bactor.SubscribeEvent(message.TOPIC_SMART_CODE_EVENT, pushSmartCodeEvent)
-	go func() {
-		ws = websocket.InitWsServer()
-		ws.Start()
-	}()
+	ws = websocket.InitWsServer()
+	go ws.Start()
+	return func() error {
+		return ws.Stop()
+	}
 }
 func sendBlock2WSclient(v interface{}) {
 	if cfg.DefConfig.Ws.HttpWsPort != 0 {

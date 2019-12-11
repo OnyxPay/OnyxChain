@@ -210,11 +210,13 @@ func (self *WsServer) registryMethod() {
 	self.ActionMap = actionMap
 }
 
-func (self *WsServer) Stop() {
+func (self *WsServer) Stop() error {
 	if self.server != nil {
-		self.server.Shutdown(context.Background())
+		err := self.server.Shutdown(context.Background())
 		log.Infof("Close websocket ")
+		return err
 	}
+	return nil
 }
 func (self *WsServer) Restart() {
 	go func() {
