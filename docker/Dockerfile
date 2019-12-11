@@ -1,44 +1,31 @@
-# cd ./docker
-# docker build -t onyxchain .
+# docker build -f docker/Dockerfile -t onyxchain .
+
+FROM golang:1-alpine AS builder
+
+WORKDIR /go/src/app
+
+COPY . .
+
+ENV GO111MODULE=on
+
+RUN go get -d -v ./... && go install -v ./...
+
 
 FROM alpine:latest
 
-RUN mkdir -p /opt/OnyxChain && \
-    mkdir -p /opt/OnyxChain/cert
+RUN apk add --no-cache bash curl jq \
+    && mkdir -p /opt/OnyxChain /var/log/checkhealth \
+    && curl -LR https://github.com/vi/websocat/releases/download/v1.5.0/websocat_amd64-linux-static -o /usr/local/bin/websocat \
+    && chmod +x /usr/local/bin/websocat
 
-
-
-ENV PATH /opt/OnyxChain:$PATH
 WORKDIR /opt/OnyxChain
 
-RUN apk update && apk add git curl jq npm bash && \
-    npm install -g wscat
+COPY --from=builder /go/bin/OnyxChain .
 
-ENV GO111MODULE="on"
+COPY docker/checkOnyxChainHealth.sh /opt
 
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev openssl go && \
-    wget -O go.tgz https://dl.google.com/go/go1.12.src.tar.gz  && \
-    tar -C /usr/local -xzf go.tgz && \
-    cd /usr/local/go/src/ && \
-    ./make.bash && \
-    export PATH="/usr/local/go/bin:$PATH" && \
-    export GOPATH=/opt/go/  && \
-    export PATH=$PATH:$GOPATH/bin && \
-    apk del .build-deps && \
-    go get github.com/OnyxPay/OnyxChain && \
-    mv /opt/go/bin/OnyxChain /opt/OnyxChain/ && \
-    rm -rf /opt/go/ && \
-    rm -rf /usr/local/go/ && \
-    rm -r /opt/OnyxChain/go.tgz
+HEALTHCHECK --interval=60s --timeout=5s --start-period=60s --retries=1 CMD bash /opt/checkOnyxChainHealth.sh
 
-
-
-COPY ./checkOnyxChainHealth.sh /opt/checkOnyxChainHealth.sh
-
-RUN chmod +x /opt/checkOnyxChainHealth.sh && \
-    echo '* * * * * /opt/checkOnyxChainHealth.sh' >> /etc/crontabs/root
-
-
-CMD ['crond', '-l 2', '-f']
-CMD [ -z "${domain}" ] && /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws \
-|| /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws --cert-file /etc/letsencrypt/live/${domain}/fullchain.pem --key-file /etc/letsencrypt/live/${domain}/privkey.pem
+CMD [ -z "${domain}" ] \
+    && /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws \
+    || /opt/OnyxChain/OnyxChain -w /opt/OnyxChain/wallet.json -a ${address} -p ${password} --networkid ${ntworkid} --gasprice 500 --rest --ws --cert-file /etc/letsencrypt/live/${domain}/fullchain.pem --key-file /etc/letsencrypt/live/${domain}/privkey.pem

@@ -6,9 +6,9 @@ if grep -q "$checkHttp" <<< "SSL"; then
 fi
 checkStatus() {
         if [ "${1}" != "SUCCESS" ]; then
-                echo "syncnode was reboot -- $(date)" >> /opt/OnyxChain/Log/checkOnyxChainHealth.log
+                echo "syncnode was reboot -- $(date)" >> /var/log/checkhealth/checkOnyxChainHealth.log
                 logger -p user.error -t $(basename $0) "syncnode was reboot -- $(date)"
-                kill -9 $(ps ax | grep OnyxChain | awk '{print $1}')
+                exit 1
         fi
 }
 checkAPI=$(curl --connect-timeout 10 --insecure -sS $hostUrl:20334/api/v1/block/height | jq -r '.Desc')
@@ -17,8 +17,8 @@ checkRPC=$(curl --connect-timeout 10 --insecure -sS -X POST -H "Content-type: ap
 checkStatus ${checkAPI}
 checkStatus ${checkRPC}
 # check websocket
-checkWebsocket=$(wscat -n -c "wss://localhost:20335" -x '{"Action": "heartbeat","Version": "1.0.0"}' | jq -r '.Desc')
+checkWebsocket=$(echo '{"Action": "heartbeat","Version": "1.0.0"}' | websocat wss://localhost:20335 | jq -r '.Desc')
 if [ -z "$checkWebsocket" ]; then
-checkWebsocket=$(wscat -n -c "ws://localhost:20335" -x '{"Action": "heartbeat","Version": "1.0.0"}' | jq -r '.Desc')
+checkWebsocket=$(echo '{"Action": "heartbeat","Version": "1.0.0"}' | websocat ws://localhost:20335 | jq -r '.Desc')
 fi
 checkStatus ${checkWebsocket}
