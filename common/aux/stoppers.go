@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
 )
 
@@ -13,9 +12,9 @@ import (
 type Stopper func() error
 
 const (
-	restStopSignal = syscall.Signal(config.DEFAULT_REST_PORT)
-	wsStopSignal   = syscall.Signal(config.DEFAULT_WS_PORT)
-	rpcStopSignal  = syscall.Signal(config.DEFAULT_RPC_PORT)
+	restStopSignal = syscall.Signal(35)     // SIGRTMIN on Alpine
+	wsStopSignal   = syscall.Signal(35 + 1) // SIGRTMIN+1
+	rpcStopSignal  = syscall.Signal(35 + 2) // SIGRTMIN+2
 )
 
 // HandleStopSignals starts goroutine which will handle UNIX signals and stop API handlers
