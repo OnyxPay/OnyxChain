@@ -28,7 +28,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/OnyxPay/OnyxChain-crypto/keypair"
 	"github.com/OnyxPay/OnyxChain-eventbus/actor"
 	alog "github.com/OnyxPay/OnyxChain-eventbus/log"
@@ -37,6 +36,7 @@ import (
 	cmdcom "github.com/OnyxPay/OnyxChain/cmd/common"
 	"github.com/OnyxPay/OnyxChain/cmd/utils"
 	"github.com/OnyxPay/OnyxChain/common"
+	"github.com/OnyxPay/OnyxChain/common/aux"
 	"github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
 	"github.com/OnyxPay/OnyxChain/consensus"
@@ -58,6 +58,7 @@ import (
 	"github.com/OnyxPay/OnyxChain/txnpool/proc"
 	"github.com/OnyxPay/OnyxChain/validator/stateful"
 	"github.com/OnyxPay/OnyxChain/validator/stateless"
+	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/urfave/cli"
 )
 
@@ -182,7 +183,7 @@ func startOnyxChain(ctx *cli.Context) {
 		log.Errorf("initConsensus error:%s", err)
 		return
 	}
-	err = initRpc(ctx)
+	rpcStopper, err := initRpc(ctx)
 	if err != nil {
 		log.Errorf("initRpc error:%s", err)
 		return
@@ -192,9 +193,10 @@ func startOnyxChain(ctx *cli.Context) {
 		log.Errorf("initLocalRpc error:%s", err)
 		return
 	}
-	initRestful(ctx)
-	initWs(ctx)
+	restStopper := initRestful(ctx)
+	wsStopper := initWs(ctx)
 	initNodeInfo(ctx, p2pSvr)
+	aux.HandleStopSignals(restStopper, wsStopper, rpcStopper)
 
 	go logCurrBlockHeight()
 	waitToExit()
@@ -337,14 +339,15 @@ func initConsensus(ctx *cli.Context, p2pPid *actor.PID, txpoolSvr *proc.TXPoolSe
 	return consensusService, nil
 }
 
-func initRpc(ctx *cli.Context) error {
+func initRpc(ctx *cli.Context) (aux.Stopper, error) {
 	if !config.DefConfig.Rpc.EnableHttpJsonRpc {
-		return nil
+		return nil, nil
 	}
+	var stopper aux.Stopper
 	var err error
 	exitCh := make(chan interface{}, 0)
 	go func() {
-		err = jsonrpc.StartRPCServer()
+		stopper, err = jsonrpc.StartRPCServer()
 		close(exitCh)
 	}()
 
@@ -352,13 +355,13 @@ func initRpc(ctx *cli.Context) error {
 	select {
 	case <-exitCh:
 		if !flag {
-			return err
+			return nil, err
 		}
 	case <-time.After(time.Millisecond * 5):
 		flag = true
 	}
 	log.Infof("Rpc init success")
-	return nil
+	return stopper, nil
 }
 
 func initLocalRpc(ctx *cli.Context) error {
@@ -386,22 +389,24 @@ func initLocalRpc(ctx *cli.Context) error {
 	return nil
 }
 
-func initRestful(ctx *cli.Context) {
+func initRestful(ctx *cli.Context) aux.Stopper {
 	if !config.DefConfig.Restful.EnableHttpRestful {
-		return
+		return nil
 	}
-	go restful.StartServer()
+	stopper := restful.StartServer()
 
 	log.Infof("Restful init success")
+	return stopper
 }
 
-func initWs(ctx *cli.Context) {
+func initWs(ctx *cli.Context) aux.Stopper {
 	if !config.DefConfig.Ws.EnableHttpWs {
-		return
+		return nil
 	}
-	websocket.StartServer()
+	stopper := websocket.StartServer()
 
 	log.Infof("Ws init success")
+	return stopper
 }
 
 func initNodeInfo(ctx *cli.Context, p2pSvr *p2pserver.P2PServer) {

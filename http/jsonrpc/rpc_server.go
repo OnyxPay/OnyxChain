@@ -20,17 +20,19 @@
 package jsonrpc
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
 	"fmt"
 
+	"github.com/OnyxPay/OnyxChain/common/aux"
 	cfg "github.com/OnyxPay/OnyxChain/common/config"
 	"github.com/OnyxPay/OnyxChain/common/log"
 	"github.com/OnyxPay/OnyxChain/http/base/rpc"
 )
 
-func StartRPCServer() error {
+func StartRPCServer() (aux.Stopper, error) {
 	log.Debug()
 	http.HandleFunc("/", rpc.Handle)
 
@@ -64,14 +66,18 @@ func StartRPCServer() error {
 	port := int(cfg.DefConfig.Rpc.HttpJsonPort)
 	certPath := cfg.DefConfig.Rpc.HttpCertPath
 	keyPath := cfg.DefConfig.Rpc.HttpKeyPath
+	server := &http.Server{Addr: ":" + strconv.Itoa(port), Handler: nil}
 	var err error
 	if len(certPath) > 0 && len(keyPath) > 0 {
-		err = http.ListenAndServeTLS(":"+strconv.Itoa(port), certPath, keyPath, nil)
+		err = server.ListenAndServeTLS(certPath, keyPath)
 	} else {
-		err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
+		err = server.ListenAndServe()
 	}
 	if err != nil {
-		return fmt.Errorf("ListenAndServe error:%s", err)
+		return nil, fmt.Errorf("ListenAndServe error:%s", err)
 	}
-	return nil
+	stopper := func() error {
+		return server.Shutdown(context.Background())
+	}
+	return stopper, nil
 }
